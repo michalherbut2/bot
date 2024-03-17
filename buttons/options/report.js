@@ -4,14 +4,18 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
+const replyDangerEmbed = require("../../functions/messages/replyDangerEmbed");
 
 module.exports = {
+  
   name: "report",
   button: new ButtonBuilder()
     .setCustomId("report")
     .setLabel("Report")
     .setStyle(ButtonStyle.Danger),
+  
   async execute(interaction) {
+  
     const { channel, guild } = interaction;
     
     // Pobierz całą konwersację z bieżącego kanału
@@ -26,10 +30,21 @@ module.exports = {
     let reportChannel = guild.channels.cache.find(
       channel => channel.name === channelName
     );
+    
+    // #########
+    // TODO find category by name
+    // #########
+    
+    let reportCategory = guild.channels.cache.find(
+      channel => channel.name === "ENQUIRIES - REPORTS"
+    );
 
     if (!reportChannel)
       reportChannel = await guild.channels.create({
         name: `report-${channel.name}`,
+        // parent: "1218724264946172025", // buzz
+        parent: reportCategory.id, // test
+
         permissionOverwrites: [
           // Zablokuj dostęp dla wszystkich poza rolą administratora
           {
@@ -37,9 +52,17 @@ module.exports = {
             allow: [PermissionsBitField.Flags.ViewChannel],
           },
           {
+            id: "883718029219885086",
+            allow: [PermissionsBitField.Flags.SendMessages],
+          },
+          {
             id: guild.roles.everyone,
             deny: [PermissionsBitField.Flags.ViewChannel],
           },
+          // {
+          //   id: "883718029219885086",
+          //   allow: [PermissionsBitField.Flags.SendMessages],
+          // },
           // {
           //   id: adminRole.id,
           //   allow: [Permissions.FLAGS.VIEW_CHANNEL],
@@ -48,11 +71,12 @@ module.exports = {
       });
 
     // Wyślij całą konwersację do kanału zgłoszeń
-    sendEmbed(reportChannel, `Report from ${channel}`, allMessages);
+    sendEmbed(reportChannel, {title: `Report from ${channel}`, description: allMessages});
 
     // Odpowiedz użytkownikowi, że zgłoszenie zostało przyjęte
-    interaction.reply(
-      "The chat has been reported and saved for the administration."
-    );
+    // interaction.reply(
+    // replyDangerEmbed(interaction, `<@${interaction.user.id}> has reported the chat.`)
+    sendEmbed(interaction, {description: `<@${interaction.user.id}> has reported the chat.`, color: "red"})
   },
 };
+ 

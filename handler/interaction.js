@@ -13,12 +13,12 @@ module.exports = async (client) => {
     const file = require(value);
     const splitted = value.split("/");
     const directory = splitted[splitted.length - 2];
+    file.directory = directory
 
-    if (!file?.name) return;
+    if (!file?.data.name) return;
 
-    const properties = { directory, ...file };
-    client.slashCommands.set(file.name, properties);
-    arrayOfSlashCommands.push(file);
+    client.slashCommands.set(file.data.name, file);
+    arrayOfSlashCommands.push(file.data.toJSON());
   });
 
   // Buttons
@@ -28,6 +28,7 @@ module.exports = async (client) => {
     const splitted = value.split("/");
     const directory = splitted[splitted.length - 2];
     file.directory = directory
+
     if (!file?.name) return;
     
     client.buttons.set(file.name, file);
@@ -37,14 +38,14 @@ module.exports = async (client) => {
   const eventFiles = await globPromise(`${process.cwd()}/events/*.js`);
   eventFiles.map((value) => require(value));
 
-  // // Slash Commands Register
-  // client.on("ready", async () => {
-  //   // Register for a single guild
-  //   await client.guilds.cache.get("883720564970250290").commands.set(arrayOfSlashCommands);
+  // Slash Commands Register
+  client.on("ready", async () => {
+    // Register for a single guild
+    await client.guilds.cache.get("883720564970250290").commands.set(arrayOfSlashCommands);
 
-  //   // Register for all the guilds the bot is in
-  //   // await client.application.commands.set(arrayOfSlashCommands);
-  // });
+    // Register for all the guilds the bot is in
+    // await client.application.commands.set(arrayOfSlashCommands);
+  });
 
   // mongoose
   // const mongooseConnectionString = process.env.mongooseConnectionString;

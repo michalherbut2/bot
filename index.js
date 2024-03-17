@@ -1,7 +1,15 @@
 require("dotenv").config();
-const { Client, Collection } = require("discord.js");
+const { Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
 
-const client = new Client({ intents: 32767 });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  partials: [Partials.Channel],
+});
 module.exports = client;
 
 // Global Variables
@@ -12,5 +20,15 @@ client.buttons = new Collection();
 // Initializing the project
 require("./handler/interaction")(client);
 require("./handler/messageCreate")(client);
+
+client
+  .on("warn", console.warn)
+  .on("error", console.error)
+  .on("shardError", console.error);
+
+process
+  .on("uncaughtException", console.error)
+  .on("uncaughtExceptionMonitor", console.error)
+  .on("unhandledRejection", console.error);
 
 client.login(process.env.TOKEN);

@@ -15,7 +15,8 @@ client.on(Events.InteractionCreate, async interaction => {
   
   // Button Handling
   else if (interaction.isButton()) {
-    
+    // await interaction.deferReply({ ephemeral: false }).catch(() => {});
+
     const { buttons } = client;
     const { customId } = interaction;
 

@@ -32,10 +32,11 @@
 // };
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 
-module.exports = (
+module.exports = async (
   target,
   { title, description, image, row, color = 0xffc300, ephemeral = false, followUp = false }
 ) => {
+  console.log("start mebed");
   // const { title, description, image, row, color } = messageData;
   switch (color) {
     case "red":

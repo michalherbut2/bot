@@ -32,7 +32,7 @@ module.exports = {
         const channelRoleMember = role.members.find(roleMember => channel.permissionsFor(roleMember).serialize().ViewChannel)
         console.log(channelRoleMember);
         console.log(`%c Middleman on channel ${channelRoleMember?.displayName}`, 'background: #222; color: #bada55');
-        channelRoleMember && channelRoleMember.roles.remove(role);
+        channelRoleMember?.roles.remove(role);
         channel.delete();
       }
 

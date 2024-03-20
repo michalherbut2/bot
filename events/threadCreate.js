@@ -4,7 +4,7 @@ const createRow = require("../functions/messages/createRow");
 const sendEmbed = require("../functions/messages/sendEmbed");
 
 client.on(Events.ThreadCreate, thread => {
-  console.log(thread);
+  // console.log(thread);
   if (thread.name !== "ENTER CHAT") return;
 
   const row = createRow("endChat", "report", "middleman");

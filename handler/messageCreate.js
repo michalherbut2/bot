@@ -8,11 +8,17 @@ module.exports = async client => {
     // console.log(message);
     if (message?.author?.username === "bot_test") return;
     // console.log(message);
-    if (message?.author?.username === "miszalek2" && message.content === "sd")
-      //sendEmbed(message.channel, {title: "LISTING ENQUIRY", description: "siema", image: "/run/media/d/home/michal/Obrazy/Jura-logos/jura_banner_subtitle.png"});
-      message.channel.threads.create({
-        name: "ENTER CHAT",
-      });
+    if (message?.author?.username === "miszalek2" && message.content === "sd") {
+      const invites = await message.guild.invites.fetch();
+
+      // invites.map(invite => console.log(invite.uses,invite.inviterId,invite.code));
+      // invites.reduce((acc, cur)=>{acc[cur.inviterId]+=})
+      // message.channel.threads.create({
+      //   name: "ENTER CHAT",
+      // });
+    }
+
+    //sendEmbed(message.channel, {title: "LISTING ENQUIRY", description: "siema", image: "/run/media/d/home/michal/Obrazy/Jura-logos/jura_banner_subtitle.png"});
     // if (detectEmbed(message, "enquiry", "LISTING ENQUIRY")) {
     //   // const endChat = require("../buttons/options/endChat").button
     //   // const report = require("../buttons/options/report").button

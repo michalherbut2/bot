@@ -1,5 +1,6 @@
 const { Events } = require("discord.js");
 const client = require("../index");
+const sendEmbed = require("../functions/messages/sendEmbed");
 
 client.on(Events.InteractionCreate, async interaction => {
   // Slash Command Handling
@@ -29,5 +30,13 @@ client.on(Events.InteractionCreate, async interaction => {
     } catch (err) {
       console.error(err);
     }
+  }
+  else if (interaction.isModalSubmit()) {
+    const favoriteColor = interaction.fields.getTextInputValue('favoriteColorInput');
+    const hobbies = interaction.fields.getTextInputValue('hobbiesInput');
+    console.log( favoriteColor, hobbies );
+    // console.log(interaction);
+    await sendEmbed(interaction, {title: favoriteColor, description: hobbies})
+    // await interaction.reply({ content: 'Your submission was received successfully!' });
   }
 });

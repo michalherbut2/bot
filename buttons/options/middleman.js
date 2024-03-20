@@ -17,38 +17,37 @@ module.exports = {
       role => role.name === "Middleman"
     );
     try {
-    console.log("1");
 
       if (!middlemanRole) throw new Error("Middleman role not found!");
-    console.log("2");
 
-      guild.roles.cache.get(middlemanRole.id).members.map(m => console.log(m.user.tag));
-    console.log("3");
-      
       // const membersWithRole2 = guild.roles.cache.get(roleID).members;
-      middlemanRole.members.forEach(member=>console.log(member))
+      console.log("role members:",middlemanRole.members.size);
+      
+      console.log('\x1b[31m%s\x1b[0m', 'siema');  //red
       // let threadMembers;
       // if (channel.isThread()) threadMembers = await channel.members.fetch();
-      console.log("4");
 
       const members = await guild.members.fetch();
-      const membersWithRole = guild.members.cache.filter(member =>
+      console.log("Pobrałem");
+      const membersWithRole = members.filter(member =>
         member.roles.cache.has(middlemanRole.id)
       );
-      console.log(membersWithRole);
-      if (
-        membersWithRole.some(
-          member => channel.permissionsFor(member).serialize().ViewChannel
-        )
+      console.log("membersWithRole", membersWithRole.size);
+      membersWithRole.map(a => console.log(a.displayName, a?.presence?.status))
+      const channelMember = membersWithRole.find(
+        member => channel.permissionsFor(member).serialize().ViewChannel
       )
-        throw new Error("The middleman is already on the channel!");
-      console.log("siema2");
+
+      if (channelMember) {
+        console.log(`The middleman ${channelMember.displayName} is already on the channel!`);
+        throw new Error(`The middleman ${channelMember.displayName} is already on the channel!`);
+      }
 
       const activeMembersWithRole = membersWithRole.filter(
         member => member.presence
       );
 
-      activeMembersWithRole.forEach(a => console.log(a.user.username));
+      console.log("activeMembersWithRole",activeMembersWithRole.size);
 
       // const newMembers = activeMembersWithRole.filter(
       //   member =>
@@ -62,8 +61,10 @@ module.exports = {
         member => !member.roles.cache.find(role => role.name === "Busy")
       );
 
+      console.log("freeMembers", freeMembers.size);
+
       if (freeMembers.size < 1)
-        throw new Error("There are no active users with the middleman role!");
+        throw new Error("All Middleman are currently busy or there is none active.");
 
       const randomMember = freeMembers.random();
 
@@ -83,9 +84,9 @@ module.exports = {
       console.log("4",randomMember.displayName);
       
       // sendEmbed(interaction, { description: "siema" })
-      // await sendEmbed(interaction, {
-      //   description: `<@${interaction.user.id}> has invited one of the active middleman <@${randomMember.user.id}> to the chat.`,
-      // });
+      await sendEmbed(interaction, {
+        description: `<@${interaction.user.id}> invited middleman <@${randomMember.user.id}> to the chat.`,
+      });
       console.log("5");
 
     } catch (error) {

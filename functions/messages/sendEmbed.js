@@ -34,34 +34,39 @@ const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 
 module.exports = async (
   target,
-  { title, description, image, row, color = 0xffc300, ephemeral = false, followUp = false }
+  {
+    title,
+    description,
+    image,
+    row,
+    color = 0xffc300,
+    ephemeral = false,
+    followUp = false,
+  }
 ) => {
   console.log("start mebed");
   // const { title, description, image, row, color } = messageData;
   switch (color) {
     case "red":
-      color = 0xf60101
+      color = 0xf60101;
       break;
-  
+
     case "green":
-      color = 0x248046
+      color = 0x248046;
       break;
-  
+
     default:
       break;
   }
   const embed = new EmbedBuilder().setColor(color).setDescription(description);
   if (title) embed.setTitle(title);
-  
+
   const message = { embeds: [embed] };
   if (row) message.components = [row];
 
   if (image && image.startsWith("http")) {
-
     message.embeds[0].setImage(image);
-  
   } else if (image) {
-
     const attachment = new AttachmentBuilder(image);
     message.embeds[0].setImage(`attachment://${image.split("/").pop()}`);
     message.files = [attachment];
@@ -69,15 +74,11 @@ module.exports = async (
 
   console.log("type:", target.type);
   if (target.type == 0) target.send(message);
-    
-  else if (target.type == 3) {
-    
-    message.ephemeral = ephemeral
+  else if (target.type === 3 || target.type == 5) {
+    message.ephemeral = ephemeral;
 
-    if (followUp)
-      target.followUp(message)
-    else
-      target.reply(message);
-
+    if (followUp) await target.followUp(message);
+    else await target.reply(message);
+    console.log("kox");
   }
 };

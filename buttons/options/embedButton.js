@@ -1,10 +1,7 @@
 const {
   ButtonBuilder,
   ButtonStyle,
-  PermissionsBitField,
 } = require("discord.js");
-const replyEmbed = require("../../functions/messages/replyEmbed");
-const replyDangerEmbed = require("../../functions/messages/replyDangerEmbed");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 
 module.exports = {

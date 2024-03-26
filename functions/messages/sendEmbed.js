@@ -1,36 +1,9 @@
-// const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
-
-// module.exports = async (
-//   channel,
-//   title,
-//   description,
-//   image,
-//   row,
-//   color = 0xffc300,
-// ) => {
-//   const attachment = new AttachmentBuilder(image);
-
-//   const embed = new EmbedBuilder()
-//     .setColor(color)
-//     .setTitle(title)
-//     .setDescription(description)
-//     .setImage(
-//       "https://cdn.discordapp.com/attachments/1218001649847763045/1218007792946909234/asdasd22.png?ex=66061927&is=65f3a427&hm=ee637cb8db71085dc0334cf0bfa8296f11859c3aa7fad9ddd54ad8b38a5ed515&"
-//     );
-
-//   const message = { embeds: [embed] };
-//   if (row) message.components = [row];
-//   // if (image) {
-//   //   if (image.startsWith("http")) message.embeds[0].setImage("image");
-//   //   else {
-//   //     message.embeds[0].setImage(`attachment://${image.split("/").pop()}`);
-//   //     message.files = [attachment];
-//   //   }
-//   // }
-
-//   channel.send(message);
-// };
-const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
+const {
+  EmbedBuilder,
+  AttachmentBuilder,
+  BaseInteraction,
+  BaseChannel,
+} = require("discord.js");
 
 module.exports = async (
   target,
@@ -38,10 +11,13 @@ module.exports = async (
     title,
     description,
     image,
+    thumbnail,
     row,
+    footerText,
     color = 0xffc300,
     ephemeral = false,
     followUp = false,
+    // name,
   }
 ) => {
   console.log("start mebed");
@@ -58,13 +34,19 @@ module.exports = async (
     default:
       break;
   }
+
   const embed = new EmbedBuilder().setColor(color).setDescription(description);
   if (title) embed.setTitle(title);
+  if (thumbnail) embed.setThumbnail(thumbnail);
+  if (footerText) embed.setFooter({text: footerText})
 
   const message = { embeds: [embed] };
   if (row) message.components = [row];
 
-  if (image && image.startsWith("http")) {
+  if (image instanceof Array) {
+    image.map(i => message.embeds[0].setImage(i));
+    console.log(image);
+  } else if (image?.startsWith("http")) {
     message.embeds[0].setImage(image);
   } else if (image) {
     const attachment = new AttachmentBuilder(image);
@@ -72,13 +54,20 @@ module.exports = async (
     message.files = [attachment];
   }
 
-  console.log("type:", target.type);
-  if (target.type == 0) target.send(message);
-  else if (target.type === 3 || target.type == 5) {
+  console.log("type:", target?.type);
+  // if (target instanceof ForumChannel) {
+  //   target.threads.create({
+  //     name,
+  //     message,
+  //     appliedTags: [target?.availableTags[0]?.id], //,279284729461604362,1107268916167843930
+  //   });
+  // } else
+  console.log("sending embed");
+  if (target instanceof BaseChannel) return await target.send(message);
+  else if (target instanceof BaseInteraction) {
     message.ephemeral = ephemeral;
 
-    if (followUp) await target.followUp(message);
-    else await target.reply(message);
-    console.log("kox");
+    if (followUp) return await target.followUp(message);
+    else return await target.reply(message);
   }
 };

@@ -11,11 +11,17 @@ module.exports = async client => {
     if (message?.author?.username === "miszalek2" && message.content === "sd") {
       const invites = await message.guild.invites.fetch();
 
+    
       // invites.map(invite => console.log(invite.uses,invite.inviterId,invite.code));
       // invites.reduce((acc, cur)=>{acc[cur.inviterId]+=})
       // message.channel.threads.create({
       //   name: "ENTER CHAT",
       // });
+    }
+
+    if (message.channel.name.includes("ADD IMAGES") && message.attachments.size > 0) {
+      // await message.react('✅')
+      await message.react('❌')
     }
 
     //sendEmbed(message.channel, {title: "LISTING ENQUIRY", description: "siema", image: "/run/media/d/home/michal/Obrazy/Jura-logos/jura_banner_subtitle.png"});

@@ -1,7 +1,5 @@
-const sendEmbed = require("../messages/sendEmbed");
-
 module.exports = async (interaction, userId, roleName) => {
-  const { guild, channel } = interaction;
+  const { guild } = interaction;
   const member = guild.members.cache.get(userId);
   const roleToAssign = guild.roles.cache.find(role => role.name === roleName);
 
@@ -9,13 +7,15 @@ module.exports = async (interaction, userId, roleName) => {
     return console.error(`There is no role with name: ${roleName}`);
   if (member)
     if (member.roles.cache.has(roleToAssign.id))
-      sendEmbed(channel, {
-        description: `You already have the ${roleName} role!`,
-      });
+      console.log(`${member.displyName} already have the ${roleName} role!`);
+      // sendEmbed(channel, {
+      //   description: `You already have the ${roleName} role!`,
+      // });
     else
       member.roles
         .add(roleToAssign)
         .then(() => {
+          console.log(`${member.displayName} received the ${roleName} role`);
           // sendEmbed(channel, {
           //   description: `${member.displayName} received the ${roleName} role`,
           // });
@@ -23,10 +23,11 @@ module.exports = async (interaction, userId, roleName) => {
         })
         .catch(error => {
           // channel.send("Wystąpił problem podczas próby przydzielenia roli.");
-          sendEmbed(channel, {
-            description: `Role assignment error: ${error.message}`,
-            color: "red",
-          });
+
+          // sendEmbed(channel, {
+          //   description: `Role assignment error: ${error.message}`,
+          //   color: "red",
+          // });
           console.error("Role assignment error:", error);
         });
 };

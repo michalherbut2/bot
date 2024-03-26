@@ -1,5 +1,10 @@
 require("dotenv").config();
-const { Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
+const {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Partials,
+} = require("discord.js");
 
 const client = new Client({
   intents: [
@@ -9,9 +14,14 @@ const client = new Client({
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
     // GatewayIntentBits.GuildInvites
   ],
-  partials: [Partials.Channel],
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
 });
 module.exports = client;
 
@@ -19,6 +29,7 @@ module.exports = client;
 client.commands = new Collection();
 client.slashCommands = new Collection();
 client.buttons = new Collection();
+client.modals = new Collection();
 
 // Initializing the project
 require("./handler/interaction")(client);

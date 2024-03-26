@@ -3,8 +3,6 @@ const {
   ButtonStyle,
   PermissionsBitField,
 } = require("discord.js");
-const replyEmbed = require("../../functions/messages/replyEmbed");
-const replyDangerEmbed = require("../../functions/messages/replyDangerEmbed");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 
 module.exports = {
@@ -16,21 +14,27 @@ module.exports = {
     .setStyle(ButtonStyle.Danger),
 
   async execute(interaction) {
-    const { member, channel, user, guild } = interaction;
+    await interaction.deferReply({ ephemeral: false }).catch(() => { });
+    // await interaction.deleteReply()
+
+    const { member, channel, user, guild, message } = interaction;
     
     const role = guild.roles.cache.find(role => role.name === "Busy")
+    
+    const isSeller = message.embeds[0].description.includes(`${user}`)
 
     // interaction.reply("The chat will close in 5 seconds.");
     // replyDangerEmbed(interaction, "The chat will close in 5 seconds.", true)
-    sendEmbed(interaction, {
+    await sendEmbed(interaction, {
       description: "The chat will close in 5 seconds.",
       ephemeral: true,
+      followUp: true
     });
 
     setTimeout(() => {
-      if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+      if (member.permissions.has(PermissionsBitField.Flags.Administrator) || isSeller) {
         const channelRoleMember = role.members.find(roleMember => channel.permissionsFor(roleMember).serialize().ViewChannel)
-        console.log(channelRoleMember);
+        // console.log(channelRoleMember);
         console.log(`%c Middleman on channel ${channelRoleMember?.displayName}`, 'background: #222; color: #bada55');
         channelRoleMember?.roles.remove(role);
         channel.delete();
@@ -43,7 +47,8 @@ module.exports = {
           ViewChannel: false,
         });
         sendEmbed(channel, {
-          description: `<@${user.id}> has left the chat.`,
+          // description: `<@${user.id}> has left the chat.`,
+          description: `${user} has left the chat.`,
         });
       }
     }, 5000);

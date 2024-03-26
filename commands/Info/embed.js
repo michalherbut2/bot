@@ -13,7 +13,12 @@ module.exports = {
       .setTitle('My Modal');
     
     // Add components to modal
-    const input = new TextInputBuilder()
+    const customInput = new TextInputBuilder()
+    .setCustomId('testCustomInput')
+      .setLabel("Napisz cos ciekawe bo bot placze")
+    
+    // Short means only a single line of text
+  .setStyle(TextInputStyle.Paragraph)
 	// set the maximum number of characters to allow
 	.setMaxLength(1_000)
 	// set the minimum number of characters required for submission
@@ -21,7 +26,7 @@ module.exports = {
 	// set a placeholder string to prompt the user
 	.setPlaceholder('Enter some text!')
 	// set a default value to pre-fill the input
-	.setValue('Default')
+	.setValue('Default siemaskdlasf')
 	 // require a value in this input field
 	.setRequired(true);
 
@@ -43,10 +48,10 @@ module.exports = {
   // so you need one action row per text input.
   const firstActionRow = new ActionRowBuilder().addComponents(favoriteColorInput);
   const secondActionRow = new ActionRowBuilder().addComponents(hobbiesInput);
-  // const rowInput = new ActionRowBuilder().addComponents(input);
+  const rowInput = new ActionRowBuilder().addComponents(customInput);
 
   // Add inputs to the modal
-  modal.addComponents(firstActionRow, secondActionRow);
+  modal.addComponents(firstActionRow, secondActionRow, rowInput);
 
   // Show the modal to the user
   await interaction.showModal(modal);

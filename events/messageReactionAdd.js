@@ -3,17 +3,53 @@ const client = require("../index");
 const createRow = require("../functions/messages/createRow");
 const sendEmbed = require("../functions/messages/sendEmbed");
 
-client.on(Events.MessageReactionAdd, (messageReaction, user) => {
+client.on(Events.MessageReactionAdd, async (messageReaction, user) => {
   // console.log(user);
   if (user.bot) return;
-  
-  if (messageReaction.message.channel.name !== "ADD IMAGES") return;
-  // console.log(messageReaction.message.guild.members.cacher);
-  if (
-    !messageReaction.message.guild.members.cache
-      .get(user.id)
-      .permissions.has(PermissionsBitField.Flags.BanMembers)
-  )
-    return;
-  if (messageReaction.emoji.name === "❌") messageReaction.message.delete();
+
+  const { message, emoji, users } = messageReaction;
+
+  // console.log("reakcja:", messageReaction);
+
+  const member = await message.guild.members.fetch(user.id); // Pobierz informacje o członku
+
+  if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+    if (message.channel.name === "ADD IMAGES")
+      if (emoji.name === "❌")
+        // console.log(message.guild.members.cacher);
+        message.delete();
+  } else {
+    if (message.channel.name.includes("listing-")) {
+      console.log(`Collected ${emoji.name} from ${user.tag}`);
+
+      try {
+        await users.remove(user.id); // Usuń reakcję użytkownika
+
+        const messages = await message.channel.messages.fetch();
+        if (
+          !messages.some(m => {
+            // console.log(m);
+            return m.embeds[0]?.description.includes(
+              "**, you can't add filters.\n\nOnly **admins** have permission to do so."
+            );
+          })
+        )
+          sendEmbed(message.channel, {
+            description: `**${user}**, you can't add filters.\n\nOnly **admins** have permission to do so.`,
+            color: "red",
+          });
+
+        console.log(
+          `Usunięto reakcję ${emoji.name} od użytkownika ${user.tag}, który nie jest administratorem.`
+        );
+      } catch (error) {
+        console.error("\x1b[31m%s\x1b[0m", `Wystąpił błąd podczas usuwania reakcji: ${error}`);
+      }
+    }
+  }
+
+  // if (member.permissions.has(PermissionsBitField.Flags.Administrator))
+  // if (message.channel.name === "ADD IMAGES")
+  // // console.log(message.guild.members.cacher);
+  // if (emoji.name === "❌") message.delete();
 });

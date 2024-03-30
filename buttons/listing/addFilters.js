@@ -15,7 +15,7 @@ module.exports = {
   async execute(interaction) {
     const { member, channel, guild } = interaction;
 
-    if (!member.permissions.has(PermissionsBitField.Flags.BanMembers))
+    if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
       // Wysyłanie przycisku na kanał
       return await sendEmbed(interaction, {
         description: "Only admins can create the post!",
@@ -32,7 +32,7 @@ module.exports = {
   
   *If unsure of which filters you should use. Please read the instructions.*`,
       row: instructionRow,
-      ephemeral: true
+      ephemeral: true,
     });
 
     const forumName = "tiktok-market";

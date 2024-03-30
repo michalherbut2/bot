@@ -1,7 +1,4 @@
-const {
-  PermissionsBitField,
-  ChannelType,
-} = require("discord.js");
+const { PermissionsBitField, ChannelType, Events } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 
@@ -22,16 +19,20 @@ module.exports = {
 
     console.log("kanałowanie");
 
-    // const channelName = `listing-${interaction.member.displayName}`;
+    const targetCategory = guild.channels.cache.find(
+      channel => channel.name.toLowerCase() === "listings - tiktok"
+    );
+
+    if (!targetCategory)
+      throw new Error(`I cannot create the ticket channel.
+There is no **${labelName}** category on the server!`);
+
     const channelName = `listing-${user.tag}`;
-    let targetChannel = guild.channels.cache.find(
+    let targetChannel = targetCategory?.children?.cache.find(
       channel => channel.name === channelName
     );
 
-    const targetCategory = guild.channels.cache.find(
-      channel => channel.name === "LISTINGS - TIKTOK"
-    );
-
+    
     if (targetChannel)
       return await sendEmbed(interaction, {
         description: `**You already have a listing ${targetChannel} in progress.**
@@ -50,33 +51,37 @@ Please wait until your previous listing is finalised!`,
 
         permissionOverwrites: [
           //   // Zablokuj dostęp dla wszystkich poza rolą administratora
-          //   {
-          //     id: guild.roles.everyone,
-          //     deny: [PermissionsBitField.Flags.ViewChannel],
-          //   },
           {
             id: client.user.id,
-            allow: [PermissionsBitField.Flags.ViewChannel],
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
           },
           {
             id: user.id,
-            allow: [PermissionsBitField.Flags.ViewChannel],
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessagesInThreads,
+              PermissionsBitField.Flags.AttachFiles,
+            ],
           },
           {
             id: guild.id,
-            denny: [PermissionsBitField.Flags.ViewChannel],
-          }
+            deny: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
+          },
         ],
       });
-/*
+    /*
     targetChannel.permissionOverwrites.create(client.user.id, {
       ViewChannel: true,
     });
     targetChannel.permissionOverwrites.create(user.id, { ViewChannel: true });
     targetChannel.permissionOverwrites.edit(guild.id, { ViewChannel: false });
 */
-
-
 
     // channel.permissionOverwrites.create(channel.guild.roles.everyone, {
     //   ViewChannel: false,
@@ -126,85 +131,44 @@ ${descriptionValue}
 
 **MAKE YOUR WAY TO THE ${targetChannel}**`,
       ephemeral: true,
-      followUp: true
+      followUp: true,
     });
 
-    await targetChannel.threads.create({
+    const thread = await targetChannel.threads.create({
       name: "ADD IMAGES",
     });
 
-    // const privateThread = await targetChannel.threads.create({
-    //   name: "Add Filters",
-    //   // type: ChannelType.PrivateThread
-    // });
-    // privateThread.setInvitable(false)
+    console.log(user);
+    thread.members.add(user.id);
 
-//     const instructionRow = createRow("instruction");
+    const instructionRow = createRow("instruction");
 
-//     const tagEmbed = await sendEmbed(targetChannel, {
-//       title: "Add Filters",
-//       description: `Choose filters by simply clicking on a emoji below.
+    const tagEmbed = await sendEmbed(targetChannel, {
+      title: "Add Filters",
+      description: `Choose filters by simply clicking on a emoji below.
 
-// *If unsure of which filters you should use. Please read the instructions.*`,
-//       row: instructionRow,
-//     });
+*If unsure of which filters you should use. Please read the instructions.*`,
+      row: instructionRow,
+    });
 
-//     // const emojis = guild.emojis.cache;
+    const forumName = "tiktok-market";
+    const forumChannel = (await guild.channels.fetch()).find(
+      channel =>
+        channel.name.includes(forumName) &&
+        channel.parent.name.toLowerCase().includes("home")
+    );
 
-//     // const lockfinal = emojis.find(emoji => emoji.name === "lockfinal");
-//     // const MoneyBag = emojis.find(emoji => emoji.name === "MoneyBag");
-//     // const ThumbUp = emojis.find(emoji => emoji.name === "ThumbUp");
-//     // const BangBang = emojis.find(emoji => emoji.name === "BangBang");
-//     // const flag_us = emojis.find(emoji => emoji.name === "flag_us");
-//     // const flag_gb = emojis.find(emoji => emoji.name === "flag_gb");
-//     // const flag_de = emojis.find(emoji => emoji.name === "flag_de");
-//     // const flag_fr = emojis.find(emoji => emoji.name === "flag_fr");
-//     // const flag_br = emojis.find(emoji => emoji.name === "flag_br");
+    //     console.log("FORUM:", forumChannel?.name);
 
-//     // const emojiMap = {
-//     //   lockfinal: "lockfinal",
-//     //   MoneyBag: "MoneyBag",
-//     //   ThumbUp: "ThumbUp",
-//     //   BangBang: "BangBang",
-//     //   flag_us: "🇺🇸",
-//     //   flag_gb: "🇬🇧",
-//     //   flag_de: "🇩🇪",
-//     //   flag_fr: "🇫🇷",
-//     //   flag_br: "🇧🇷",
-//     // };
+    await Promise.all(
+      forumChannel?.availableTags.map(async tag => {
+        // console.log("emoji tagu:", tag.emoji);
+        if (tag.emoji?.id || tag.emoji?.name)
+          await tagEmbed.react(tag.emoji?.id || tag.emoji?.name);
 
-//     // const emojisObject = {};
-//     // for (const key in emojiMap) {
-//     //   if (!key.includes("flag")) {
-//     //     emojisObject[key] = emojis.find(emoji => emoji.name === emojiMap[key]);
-//     //   } else emojisObject[key] = emojiMap[key];
-//     // }
-
-//     // for (const key in emojisObject) {
-//     //   console.log(emojisObject[key]);
-//     //   tagEmbed.react(emojisObject[key]);
-//     // }
-//     const forumName = "tiktok-market";
-//     const forumChannel = (await guild.channels.fetch()).find(
-//       channel =>
-//         channel.name.includes(forumName) &&
-//         channel.parent.name.toLowerCase().includes("home")
-//     );
-//     console.log("FORUM:", forumChannel?.name);
-//     // const tag =
-//     await Promise.all(
-//       forumChannel?.availableTags.map(async tag => {
-//         // console.log("emoji tagu:", tag.emoji);
-//         // tagEmbed.react(emojisObject[key]);
-//         if (tag.emoji?.id || tag.emoji?.name)
-//           await tagEmbed.react(tag.emoji?.id || tag.emoji?.name);
-
-//         return tag.emoji?.id || tag.emoji?.name;
-//       })
-//     );
-    // tag
-
-    // tagEmbed.react();
+        return tag.emoji?.id || tag.emoji?.name;
+      })
+    );
 
     console.log(`CREATED LISTING TIKTOK for ${user.tag}`);
   },

@@ -37,7 +37,7 @@ require("./handler/messageCreate")(client);
 
 client
   .on("warn", console.warn)
-  .on("error", console.error)
+  .on("error", error => console.error("\x1b[31m%s\x1b[0m", error))
   .on("shardError", console.error);
 
 process

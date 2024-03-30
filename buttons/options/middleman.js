@@ -101,7 +101,7 @@ module.exports = {
         `${interaction.user.tag} invited middleman ${randomMember.user.tag} to the chat.`
       );
     } catch (error) {
-      console.error(error);
+      console.error("\x1b[31m%s\x1b[0m", error);
       sendEmbed(channel, { description: error.message, ephemeral: true });
     }
   },

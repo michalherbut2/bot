@@ -6,6 +6,7 @@ const {
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createThread = require("../../functions/messages/createThread");
+const createRow = require("../../functions/messages/createRow");
 
 module.exports = {
   name: "create",
@@ -22,7 +23,7 @@ module.exports = {
     let description = message.embeds[0].description;
 
     // Sprawdzenie, czy użytkownik ma uprawnienia administratora
-    if (!member.permissions.has(PermissionsBitField.Flags.BanMembers))
+    if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
       // Wysyłanie przycisku na kanał
       return await sendEmbed(interaction, {
         description: "Only admins can create the post!",
@@ -52,7 +53,7 @@ module.exports = {
     );
     // console.log(targetChannel?.availableTags);
     // targetChannel?.availableTags.forEach(tag => console.log(tag));
-    description = `**Seller**:\n${userId}\n\n${description}`;
+    description = `**Seller**:\n${userId}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
 
     //   console.log(`Znaleziono oznaczenie użytkownika: ${match[0]}`);
     //   console.log(`ID użytkownika: ${userId}`);
@@ -60,22 +61,29 @@ module.exports = {
     //   console.log("Nie znaleziono oznaczenia użytkownika.");
     // }
 
-    const mess = await channel.threads.cache
-      .find(thread => thread.name === "ADD IMAGES")
-      .messages.fetch();
+    // const mess = await channel.threads.cache
+    //   .find(thread => thread.name === "ADD IMAGES")
+    //   .messages.fetch();
+
+    const imageThread = channel.threads.cache.find(
+      thread => thread.name === "ADD IMAGES"
+    );
+
+    const mess = await imageThread.messages.fetch();
 
     const images = mess.map(m => m.attachments.map(i => i.url)).flat();
     console.log("images:", images);
     if (!images.length)
       return await sendEmbed(interaction, {
-        description: "Add images!",
+        description: `Add images in ${imageThread}!`,
+        color: "red",
         ephemeral: true,
         followUp: true,
       });
 
     const embeds = await channel.messages.fetch();
     const tagEmbed = embeds.find(e =>
-      e.embeds[0]?.title.includes("Add Filters")
+      e.embeds[0]?.title?.includes("Add Filters")
     );
 
     const reactions = tagEmbed.reactions.cache;
@@ -90,12 +98,13 @@ module.exports = {
           const member = guild.members.cache.get(user.id);
           // console.log(
           //   user.id,
-          //   member?.permissions.has(PermissionFlagsBits.BanMembers) && !user.bot,
-          //   member?.permissions.has(PermissionFlagsBits.BanMembers),
+          //   member?.permissions.has(PermissionFlagsBits.Administrator) && !user.bot,
+          //   member?.permissions.has(PermissionFlagsBits.Administrator),
           //   !user.bot
           // );
           return (
-            member?.permissions.has(PermissionFlagsBits.BanMembers) && !user.bot
+            member?.permissions.has(PermissionFlagsBits.Administrator) &&
+            !user.bot
           );
         });
 
@@ -120,7 +129,8 @@ module.exports = {
 
     if (!appliedTags.length)
       return await sendEmbed(interaction, {
-        description: "Add filters!",
+        description: `Add filters in ${tagEmbed.url}!`,
+        color: "red",
         ephemeral: true,
         followUp: true,
       });
@@ -132,6 +142,8 @@ module.exports = {
       appliedTags,
     });
 
+    const row = createRow("enquire");
+
     // send embed in thread
     await sendEmbed(threadChannel, {
       description,
@@ -139,6 +151,7 @@ module.exports = {
         "https://media.discordapp.net/attachments/1218001649847763045/1218010018939670579/listing.png?ex=660f55ba&is=65fce0ba&hm=535bc26678b6f233265d24673ac9174f6a5d25733bfc0f545a4f2c524f6bec1c&format=webp&quality=lossless&width=1440&height=311&",
       thumbnail:
         "https://media.discordapp.net/attachments/1216183037507932263/1216562554030264340/Logoonew.png?ex=66134c2b&is=6600d72b&hm=06b6dae2d0f70b9a34d2939206c860a6089e000a5b359ae71a14dc43baf6161e&format=webp&quality=lossless&width=625&height=625&",
+      row,
     });
 
     // reply

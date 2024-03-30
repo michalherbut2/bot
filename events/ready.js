@@ -1,5 +1,6 @@
 const { Collection, PermissionsBitField } = require("discord.js");
 const client = require("../index");
+const createDB = require("../functions/db/createDB");
 
 const invites = new Collection()
 
@@ -17,4 +18,6 @@ client.on("ready", async () => {
 
     client.invites = invites
   })
+
+  createDB()
 });

@@ -3,6 +3,7 @@ const {
   AttachmentBuilder,
   BaseInteraction,
   BaseChannel,
+  User,
 } = require("discord.js");
 
 module.exports = async (
@@ -17,11 +18,10 @@ module.exports = async (
     color = 0xffc300,
     ephemeral = false,
     followUp = false,
-    // name,
   }
 ) => {
   console.log("start mebed");
-  // const { title, description, image, row, color } = messageData;
+
   switch (color) {
     case "red":
       color = 0xf60101;
@@ -35,14 +35,17 @@ module.exports = async (
       break;
   }
 
+  // create embed
   const embed = new EmbedBuilder().setColor(color).setDescription(description);
   if (title) embed.setTitle(title);
   if (thumbnail) embed.setThumbnail(thumbnail);
-  if (footerText) embed.setFooter({text: footerText})
+  if (footerText) embed.setFooter({ text: footerText });
 
-  const message = { embeds: [embed] };
+  // create message
+  const message = { embeds: [embed], ephemeral };
   if (row) message.components = [row];
 
+  // handle images
   if (image instanceof Array) {
     image.map(i => message.embeds[0].setImage(i));
     console.log(image);
@@ -54,20 +57,15 @@ module.exports = async (
     message.files = [attachment];
   }
 
-  console.log("type:", target?.type);
-  // if (target instanceof ForumChannel) {
-  //   target.threads.create({
-  //     name,
-  //     message,
-  //     appliedTags: [target?.availableTags[0]?.id], //,279284729461604362,1107268916167843930
-  //   });
-  // } else
-  console.log("sending embed");
-  if (target instanceof BaseChannel) return await target.send(message);
-  else if (target instanceof BaseInteraction) {
-    message.ephemeral = ephemeral;
+  // send message
+  console.log("\x1b[32m%s\x1b[0m", "sending embed"); // green
 
+  if (target instanceof BaseChannel || target instanceof User)
+    return await target.send(message);
+  else if (target instanceof BaseInteraction) {
     if (followUp) return await target.followUp(message);
     else return await target.reply(message);
   }
+
+  console.log("\x1b[31m%s\x1b[0m", "The embed has not been sent."); // red
 };

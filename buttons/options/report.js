@@ -42,24 +42,25 @@ module.exports = {
         color: "red",
       });
 
-    const channelName = `report-${channel.name}`;
-    let reportChannel = guild.channels.cache.find(
-      channel => channel.name === channelName
-    );
-
-    // #########
-    // TODO find category by name
-    // #########
-
-    let reportCategory = guild.channels.cache.find(
+    const targetCategory = guild.channels.cache.find(
       channel => channel.name === "ENQUIRIES - REPORTS"
     );
 
-    if (!reportChannel)
-      reportChannel = await guild.channels.create({
+    if (!targetCategory)
+      throw new Error(`I cannot create the report channel.
+There is no **${labelName}** category on the server!`);
+
+    const channelName = `report-${channel.name}`;
+    let targetChannel = targetCategory?.children?.cache.find(
+      channel => channel.name === channelName
+    );
+
+
+    if (!targetChannel)
+      targetChannel = await guild.channels.create({
         name: `report-${channel.name}`,
         // parent: "1218724264946172025", // buzz
-        parent: reportCategory.id, // test
+        parent: targetCategory.id, // test
 
         permissionOverwrites: [
           // Zablokuj dostęp dla wszystkich poza rolą administratora
@@ -87,7 +88,7 @@ module.exports = {
       });
 
     // Wyślij całą konwersację do kanału zgłoszeń
-    sendEmbed(reportChannel, {
+    sendEmbed(targetChannel, {
       title: `Report from ${channel}`,
       description: allMessages,
     });

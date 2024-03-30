@@ -32,7 +32,7 @@ module.exports = {
       channel => channel.name === channelName
     );
 
-    const row = createRow("endChat", "edit", "create", "addFilters");
+    const row = createRow("endChat", "edit", "create");
 
     // console.log(interaction);
     await editEmbed(interaction.message, {

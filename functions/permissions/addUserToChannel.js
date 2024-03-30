@@ -13,6 +13,6 @@ module.exports = async ({channel}, user) => {
     console.log(`Private message sent to ${user.tag}.`);
 
   } catch (error) {
-    console.error("Error adding user to channel:", error);
+    console.error("\x1b[31m%s\x1b[0m", `Error adding user to channel: ${error}`);
   }
 };

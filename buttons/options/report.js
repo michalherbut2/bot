@@ -4,7 +4,6 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
-const client = require("../..");
 
 module.exports = {
   name: "report",
@@ -14,21 +13,21 @@ module.exports = {
     .setStyle(ButtonStyle.Danger),
 
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: false }).catch(() => {});
+    await interaction.deferReply({ ephemeral: true });
     await interaction.deleteReply();
 
     const { channel, guild, client } = interaction;
 
-    // Pobierz całą konwersację z bieżącego kanału
-    // const threadMessages = await channel.threads.fetch()
-    // console.log(threadMessages);
-    const threadMessages = await (await channel.threads.fetch()).threads
+    // get thread messages
+    const threads = await channel.threads.fetch();
+
+    const threadMessages = await threads.threads
       .find(thread => thread.name === "ENTER CHAT")
       .messages.fetch();
-    // const threadsMessages = threads.map(async thread => await thread.messages.fetch())
-    // const messages = await channel.messages.fetch();
+
+    // create content
     let allMessages = "";
-    // messages.reverse().forEach(message => {
+
     threadMessages.reverse().forEach(message => {
       if (message.content)
         allMessages += `**${message.author.tag}**: ${message.content}\n`;
@@ -38,10 +37,11 @@ module.exports = {
       return await sendEmbed(interaction, {
         description: "There are no messages to report!",
         ephemeral: true,
-        // followUp: true,
+        followUp: true,
         color: "red",
       });
 
+    // find category
     const targetCategory = guild.channels.cache.find(
       channel => channel.name === "ENQUIRIES - REPORTS"
     );
@@ -50,12 +50,13 @@ module.exports = {
       throw new Error(`I cannot create the report channel.
 There is no **${labelName}** category on the server!`);
 
+    // find channel
     const channelName = `report-${channel.name}`;
     let targetChannel = targetCategory?.children?.cache.find(
       channel => channel.name === channelName
     );
 
-
+    // create channel
     if (!targetChannel)
       targetChannel = await guild.channels.create({
         name: `report-${channel.name}`,
@@ -65,43 +66,33 @@ There is no **${labelName}** category on the server!`);
         permissionOverwrites: [
           // Zablokuj dostęp dla wszystkich poza rolą administratora
           {
-            id: client.id,
-            allow: [PermissionsBitField.Flags.ViewChannel],
+            id: client.user.id,
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
           },
           {
-            id: client.id,
-            allow: [PermissionsBitField.Flags.SendMessages],
+            id: guild.id,
+            deny: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
           },
-          {
-            id: guild.roles.everyone,
-            deny: [PermissionsBitField.Flags.ViewChannel],
-          },
-          // {
-          //   id: "883718029219885086",
-          //   allow: [PermissionsBitField.Flags.SendMessages],
-          // },
-          // {
-          //   id: adminRole.id,
-          //   allow: [Permissions.FLAGS.VIEW_CHANNEL],
-          // },
         ],
       });
 
-    // Wyślij całą konwersację do kanału zgłoszeń
+    // send report
     sendEmbed(targetChannel, {
       title: `Report from ${channel}`,
       description: allMessages,
     });
 
-    // Odpowiedz użytkownikowi, że zgłoszenie zostało przyjęte
-    // interaction.reply(
-    // replyDangerEmbed(interaction, `<@${interaction.user.id}> has reported the chat.`)
+    // send notification
     sendEmbed(channel, {
-      // description: `<@${interaction.user.id}> has reported the chat.`,
       description: `${interaction.user} has reported the chat.`,
       color: "red",
     });
     console.log(`${interaction.user.tag} has reported the chat.`);
-    // console.log(allMessages);
   },
 };

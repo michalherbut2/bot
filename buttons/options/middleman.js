@@ -16,33 +16,33 @@ module.exports = {
 
     console.log("Pressed Middleman Button!");
     const { channel, guild } = interaction;
-    const middlemanRole = guild.roles.cache.find(
-      role => role.name === "Middleman"
-    );
+
+    // fetch data
+    const roles = await guild.roles.fetch();
+    await guild.members.fetch();
+    console.log("Data fetched!");
+
+    const middlemanRole = roles.find(role => role.name === "Middleman");
+
     try {
       if (!middlemanRole) throw new Error("Middleman role not found!");
 
-      // const membersWithRole2 = guild.roles.cache.get(roleID).members;
+      // const roleMembers2 = guild.roles.cache.get(roleID).members;
       console.log("role members:", middlemanRole.members.size);
 
       // console.log("\x1b[31m%s\x1b[0m", "siema"); //red
-      // let threadMembers;
-      // if (channel.isThread()) threadMembers = await channel.members.fetch();
+      
+      const roleMembers = middlemanRole.members;
 
-      const members = await guild.members.fetch();
-      console.log("Pobrałem");
-      const membersWithRole = members.filter(member =>
-        member.roles.cache.has(middlemanRole.id)
-      );
-      console.log("membersWithRole", membersWithRole.size);
-      membersWithRole.map(a => console.log(a.displayName, a?.presence?.status));
-      const channelMember = membersWithRole.find(
+      roleMembers.map(a => console.log(a.displayName, a?.presence?.status));
+
+      const channelMember = roleMembers.find(
         member => channel.permissionsFor(member).serialize().ViewChannel
       );
 
       if (channelMember) {
         console.log(
-          `The middleman <@${channelMember.tag}> is already on the channel!`
+          `The middleman ${channelMember.tag} is already on the channel!`
         );
         // throw new Error(`The middleman ${channelMember.displayName} is already on the channel!`);
         throw new Error(
@@ -50,21 +50,13 @@ module.exports = {
         );
       }
 
-      const activeMembersWithRole = membersWithRole.filter(
+      const activeRoleMembers = roleMembers.filter(
         member => member.presence
       );
 
-      console.log("activeMembersWithRole", activeMembersWithRole.size);
+      console.log("activeRoleMembers", activeRoleMembers.size);
 
-      // const newMembers = activeMembersWithRole.filter(
-      //   member =>
-      //     // channel.isThread()
-      //     // ? !threadMembers.find(m => m.id === member.id)
-      //     // :
-      //     !channel.permissionsFor(member).serialize().ViewChannel
-      // );
-
-      const freeMembers = activeMembersWithRole.filter(
+      const freeMembers = activeRoleMembers.filter(
         member => !member.roles.cache.find(role => role.name === "Busy")
       );
 
@@ -77,9 +69,8 @@ module.exports = {
 
       const randomMember = freeMembers.random();
 
-      // if (channel.isThread()) channel.members.add(randomMember);
-      // else
       console.log("adding busy role");
+
       addRole(channel, randomMember.id, "Busy");
 
       channel.permissionOverwrites.edit(randomMember.id, {

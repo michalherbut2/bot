@@ -1,12 +1,11 @@
 const { SlashCommandBuilder } = require("discord.js");
-const sendEmbed = require("../../functions/messages/sendEmbed");
-const createRow = require("../../functions/messages/createRow");
+const sendEmbed = require("../functions/messages/sendEmbed");
+const createRow = require("../functions/messages/createRow");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("image").setDescription("send image"),
 
   async run(client, interaction) {
-    // const row = createRow("tiktok");
     await interaction.deferReply()
     await interaction.followUp({
       files: [

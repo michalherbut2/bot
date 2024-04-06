@@ -12,6 +12,7 @@ client.on(Events.ChannelDelete, channel => {
     roleMember => channel.permissionsFor(roleMember).serialize().ViewChannel
   );
   
-  console.log(`Middleman on channel ${channelRoleMember?.displayName}`);
+  console.log(`Middleman on channel: ${channelRoleMember?.displayName}`);
+
   channelRoleMember?.roles.remove(role);
 });

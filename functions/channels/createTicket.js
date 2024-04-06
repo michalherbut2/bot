@@ -61,7 +61,6 @@ Please wait until your previous listing is finalised!`,
             allow: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,
-              // PermissionsBitField.Flags.AttachFiles,
             ],
           },
           {

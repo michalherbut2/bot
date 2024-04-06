@@ -16,5 +16,9 @@ module.exports = {
 
     const { member } = interaction;
     member.kick("They did not agree to the rules.");
+
+    console.log("\x1b[34m%s\x1b[0m", 
+        `${member.user.tag} LEFT the server by rules.`
+      );
   },
 };

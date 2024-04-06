@@ -93,6 +93,10 @@ There is no **${labelName}** category on the server!`);
       description: `${interaction.user} has reported the chat.`,
       color: "red",
     });
-    console.log(`${interaction.user.tag} has reported the chat.`);
+    
+    console.log(
+      "\x1b[34m%s\x1b[0m",
+      `${interaction.user.tag} has reported the chat.`
+    );
   },
 };

@@ -29,6 +29,7 @@ module.exports = {
     const memberRoles = member.roles.cache
 
     const neverClaimedRole = roles.find(role => role.name === "NeverClaimed");
+    
     const claimedRole = roles.find(role => role.name === "Claimed");
     
     // check role

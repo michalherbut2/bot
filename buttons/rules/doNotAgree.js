@@ -14,9 +14,6 @@ module.exports = {
     .setStyle(ButtonStyle.Danger),
 
   async execute(interaction) {
-    // await interaction.deferReply({ ephemeral: true });
-
-    // const { message, guild, channel, member } = interaction;
     const title = "Are you sure?"
 
     const description = `You will be **KICKED** from the server`

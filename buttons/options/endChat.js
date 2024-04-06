@@ -25,14 +25,10 @@ module.exports = {
       m => m.embeds[0]?.title === "LISTING ENQUIRY"
     )?.embeds[0]?.description;
 
-    console.log(description);
-
     const isSeller =
       message.embeds[0].description.includes(user) ||
       description?.includes(user);
 
-    // interaction.reply("The chat will close in 5 seconds.");
-    // replyDangerEmbed(interaction, "The chat will close in 5 seconds.", true)
     await sendEmbed(interaction, {
       description: "The chat will close in 5 seconds.",
       ephemeral: true,
@@ -48,11 +44,9 @@ module.exports = {
           roleMember =>
             channel.permissionsFor(roleMember).serialize().ViewChannel
         );
-        // console.log(channelRoleMember);
-        console.log(
-          `%c Middleman on channel ${channelRoleMember?.displayName}`,
-          "background: #222; color: #bada55"
-        );
+
+        console.log(`Middleman on channel: ${channelRoleMember?.displayName}`);
+
         channelRoleMember?.roles.remove(role);
         channel.delete();
       } else {
@@ -62,10 +56,11 @@ module.exports = {
           ViewChannel: false,
         });
         sendEmbed(channel, {
-          // description: `<@${user.id}> has left the chat.`,
           description: `${user} has left the chat.`,
         });
       }
     }, 5000);
+
+    console.log("\x1b[34m%s\x1b[0m", `The chat ENDED.`);
   },
 };

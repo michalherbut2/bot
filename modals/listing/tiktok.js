@@ -1,4 +1,4 @@
-const { PermissionsBitField, ChannelType, Events } = require("discord.js");
+const { PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 
@@ -32,7 +32,6 @@ There is no **${labelName}** category on the server!`);
       channel => channel.name === channelName
     );
 
-    
     if (targetChannel)
       return await sendEmbed(interaction, {
         description: `**You already have a listing ${targetChannel} in progress.**
@@ -42,15 +41,14 @@ Please wait until your previous listing is finalised!`,
         color: "red",
         followUp: true,
       });
-    // if (targetChannel)
     else
       targetChannel = await guild.channels.create({
         name: channelName,
-        // parent: "1218724264946172025", // buzz
-        parent: targetCategory.id, // test
+
+        parent: targetCategory.id,
 
         permissionOverwrites: [
-          //   // Zablokuj dostęp dla wszystkich poza rolą administratora
+          // Zablokuj dostęp dla wszystkich poza rolą administratora
           {
             id: client.user.id,
             allow: [
@@ -75,28 +73,12 @@ Please wait until your previous listing is finalised!`,
           },
         ],
       });
-    /*
-    targetChannel.permissionOverwrites.create(client.user.id, {
-      ViewChannel: true,
-    });
-    targetChannel.permissionOverwrites.create(user.id, { ViewChannel: true });
-    targetChannel.permissionOverwrites.edit(guild.id, { ViewChannel: false });
-*/
-
-    // channel.permissionOverwrites.create(channel.guild.roles.everyone, {
-    //   ViewChannel: false,
-    // });
-    // await targetChannel.overwritePermissions(user.id, {
-    //   VIEW_CHANNEL: true,
-    // });
 
     const row = createRow("endChat", "edit", "create");
 
-    // console.log(interaction);
     await sendEmbed(targetChannel, {
-      // title: `${interaction.member.displayName} listing`,
       title: `${user.tag} listing`,
-      // description: `The user - <@${user.id}> created the listing below.
+
       description: `The user - ${user} created the listing below.
 
 **Listing Title:**
@@ -121,11 +103,12 @@ ${descriptionValue}
       image:
         "https://cdn.discordapp.com/attachments/888756864748228681/1218410782421946418/FORMS.png?ex=6610caf7&is=65fe55f7&hm=bb33f7972c295c307caccb6d86743fdf16dcb51570f24ba696756520f9ab9369&",
     });
+
     await sendEmbed(targetChannel, {
       description:
         "Please wait for the **STAFF** to join the chat.\n\nThey should be here shortly!",
     });
-    // await interaction.reply({ content: 'Your submission was received successfully!' });
+
     await sendEmbed(interaction, {
       description: `Your submission was received successfully!
 
@@ -136,10 +119,10 @@ ${descriptionValue}
 
     const thread = await targetChannel.threads.create({
       name: "ADD IMAGES",
+      invitable: false,
     });
 
-    console.log(user);
-    thread.members.add(user.id);
+    thread.members.add(user);
 
     const instructionRow = createRow("instruction");
 
@@ -158,11 +141,8 @@ ${descriptionValue}
         channel.parent.name.toLowerCase().includes("home")
     );
 
-    //     console.log("FORUM:", forumChannel?.name);
-
     await Promise.all(
       forumChannel?.availableTags.map(async tag => {
-        // console.log("emoji tagu:", tag.emoji);
         if (tag.emoji?.id || tag.emoji?.name)
           await tagEmbed.react(tag.emoji?.id || tag.emoji?.name);
 

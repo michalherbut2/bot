@@ -9,7 +9,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
   async run(client, interaction) {
-    await interaction.deferReply({ ephemeral: false }).catch(() => {});
+    await interaction.deferReply({ ephemeral: true });
     await interaction.deleteReply();
 
     const { channel } = interaction;

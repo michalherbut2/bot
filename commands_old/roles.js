@@ -1,10 +1,10 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const sendEmbed = require("../../functions/messages/sendEmbed");
+const sendEmbed = require("../functions/messages/sendEmbed");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("test")
-    .setDescription("test"),
+    .setName("roles")
+    .setDescription("roles"),
 
   async run(client, interaction) {
     await interaction.deferReply({ ephemeral: false }).catch(() => {});

@@ -19,7 +19,6 @@ module.exports = {
     let desc = interaction.message.embeds[0].description.split("\n\n");
     
     desc = desc.slice(1, -2).map(d=>d.split('\n')[1])
-    // console.log(desc);
 
     const modal = new ModalBuilder()
       .setCustomId("edit")
@@ -62,6 +61,6 @@ module.exports = {
       )
     );
 
-    await interaction.showModal(modal);
+    interaction.showModal(modal);
   },
 };

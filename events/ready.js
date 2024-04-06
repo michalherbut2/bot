@@ -19,5 +19,5 @@ client.on("ready", async () => {
     client.invites = invites
   })
 
-  createDB()
+  createDB(client)
 });

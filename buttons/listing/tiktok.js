@@ -18,6 +18,7 @@ module.exports = {
 
   async execute(interaction) {
     const { user, guild } = interaction;
+
     const channelName = `listing-${user.tag}`;
     let targetChannel = guild.channels.cache.find(
       channel => channel.name === channelName
@@ -30,8 +31,8 @@ module.exports = {
 Please wait until your previous listing is finalised!`,
         ephemeral: true,
         color: "red",
-        // followUp: true,
       });
+
     const modal = new ModalBuilder()
       .setCustomId("tiktok")
       .setTitle("Buzz Home Listing Form");
@@ -68,14 +69,7 @@ Please wait until your previous listing is finalised!`,
       .setLabel("Description")
       .setStyle(TextInputStyle.Paragraph);
 
-    // const firstActionRow = new ActionRowBuilder().addComponents(
-    //   favoriteColorInput
-    // );
-    // const secondActionRow = new ActionRowBuilder().addComponents(hobbiesInput);
-    // const rowInput = new ActionRowBuilder().addComponents(customInput);
-
     // Add inputs to the modal
-    // modal.addComponents(firstActionRow, secondActionRow, rowInput);
     modal.addComponents(
       [titleInput, originInput, followersInput, cpbInput, descriptionInput].map(
         input => new ActionRowBuilder().addComponents(input)

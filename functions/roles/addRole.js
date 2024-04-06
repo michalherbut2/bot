@@ -45,22 +45,4 @@ module.exports = async (interaction, target, roleName) => {
       `Role assignment error: ${error}`
     );
   }
-  // member.roles
-  //   .add(roleToAssign)
-  //   .then(() => {
-  //     console.log(`${member.displayName} received the ${roleName} role`);
-  //     // sendEmbed(channel, {
-  //     //   description: `${member.displayName} received the ${roleName} role`,
-  //     // });
-  //     // channel.send(`Dodano rolę ${roleName}!`);
-  //   })
-  //   .catch(error => {
-  //     // channel.send("Wystąpił problem podczas próby przydzielenia roli.");
-
-  //     // sendEmbed(channel, {
-  //     //   description: `Role assignment error: ${error.message}`,
-  //     //   color: "red",
-  //     // });
-  //     console.error("Role assignment error:", error);
-  //   });
 };

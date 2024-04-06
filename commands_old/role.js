@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const sendEmbed = require("../../functions/messages/sendEmbed");
+const sendEmbed = require("../functions/messages/sendEmbed");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("role").setDescription("add role"),
@@ -26,7 +26,7 @@ module.exports = {
       members.map(async member => {
         await member.roles.add(neverClaimedRole);
         await member.roles.remove(claimedRole);
-        
+
         i++;
         if (i === 60) console.log("25%");
         else if (i === 120) console.log("50%");

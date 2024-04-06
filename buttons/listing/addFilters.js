@@ -8,12 +8,14 @@ const createRow = require("../../functions/messages/createRow");
 
 module.exports = {
   name: "addFilters",
+
   button: new ButtonBuilder()
     .setCustomId("addFilters")
     .setLabel("Add filters")
     .setStyle(ButtonStyle.Success),
+
   async execute(interaction) {
-    const { member, channel, guild } = interaction;
+    const { member, guild } = interaction;
 
     if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
       // Wysyłanie przycisku na kanał
@@ -30,7 +32,7 @@ module.exports = {
       title: "Add Filters",
       description: `Choose filters by simply clicking on a emoji below.
   
-  *If unsure of which filters you should use. Please read the instructions.*`,
+*If unsure of which filters you should use. Please read the instructions.*`,
       row: instructionRow,
       ephemeral: true,
     });

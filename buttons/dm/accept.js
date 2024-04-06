@@ -1,6 +1,5 @@
 const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
-const createThread = require("../../functions/messages/createThread");
 const createRow = require("../../functions/messages/createRow");
 
 module.exports = {
@@ -12,9 +11,7 @@ module.exports = {
     .setStyle(ButtonStyle.Success),
 
   async execute(interaction) {
-    // sendEmbed(interaction, { description, ephemeral: true });
-
-    const { message, client } = interaction;
+    const { message, client, user } = interaction;
 
     let description = message.embeds[0].description;
 
@@ -27,10 +24,13 @@ module.exports = {
     // console.log(message.mentions);
     console.log("channelId::::::", targetChannelId);
 
-    const guild = client.guilds.cache.find(guild => guild.channels.cache.find(c => c.id === targetChannelId));
+    const guild = client.guilds.cache.find(guild =>
+      guild.channels.cache.find(c => c.id === targetChannelId)
+    );
 
     try {
-      if (!guild) throw new Error("There is no channel!");
+      if (!guild)
+        throw new Error("The enquiry has expired! Create a new enquiry.");
 
       const targetChannel = await guild.channels.fetch(targetChannelId);
 
@@ -41,19 +41,32 @@ module.exports = {
       const targetUserlId = userMatch[1];
 
       const targetUser = await guild.members.fetch(targetUserlId);
-      
-      description = description.split("\n\n").slice(1, -1).join("\n\n");
+
+      // add permission
+      await targetChannel.permissionOverwrites.create(user, {
+        ViewChannel: true,
+        SendMessagesInThreads: true,
+        AttachFiles: true,
+      });
+
+      // reply
+      description = `** Seller **: \n${user} \n\n${description
+        .split("\n\n")
+        .slice(1, -1)
+        .join("\n\n")}`;
 
       const replyDescription = `You have **ACCEPTED** the invite from ${targetUser},
 
 Please make your way to the ${targetChannel} channel.`;
 
       await message.delete();
+
       sendEmbed(interaction, {
         description: replyDescription,
         color: 0x3ff204,
       });
 
+      // send enquiry embeds
       await targetChannel.messages.cache.first().delete();
 
       await sendEmbed(targetChannel, {
@@ -71,11 +84,10 @@ Please make your way to the ${targetChannel} channel.`;
 
       const thread = await targetChannel.threads.create({
         name: "ENTER CHAT",
+        invitable: false,
       });
 
       const row = createRow("endChat", "report", "middleman");
-
-      thread.join();
 
       sendEmbed(targetChannel, {
         title: "OPTIONS",
@@ -84,8 +96,23 @@ Please make your way to the ${targetChannel} channel.`;
           "https://cdn.discordapp.com/attachments/1218001649847763045/1218007792946909234/asdasd22.png?ex=66061927&is=65f3a427&hm=ee637cb8db71085dc0334cf0bfa8296f11859c3aa7fad9ddd54ad8b38a5ed515&",
         row,
       });
+
+      // add members to the thread
+      thread.join();
+
+      thread.members.add(targetUser);
+
+      thread.members.add(user);
     } catch (error) {
-      console.error("no dramat", error);
+      console.error("\x1b[31m%s\x1b[0m", error);
+
+      await message.delete();
+
+      sendEmbed(interaction, {
+        description: error.message,
+        ephemeral: true,
+        color: "red",
+      });
     }
   },
 };

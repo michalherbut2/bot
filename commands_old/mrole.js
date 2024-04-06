@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const sendEmbed = require("../../functions/messages/sendEmbed");
+const sendEmbed = require("../functions/messages/sendEmbed");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("mrole").setDescription("add mrole"),

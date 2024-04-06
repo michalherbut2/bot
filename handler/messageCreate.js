@@ -1,11 +1,7 @@
-const { Events, ActionRowBuilder } = require("discord.js");
-const sendEmbed = require("../functions/messages/sendEmbed");
-const detectEmbed = require("../functions/messages/detectEmbed");
-const createRow = require("../functions/messages/createRow");
+const { Events } = require("discord.js");
 
 module.exports = async client => {
   client.on(Events.MessageCreate, async message => {
-    // console.log(message);
     if (message?.author?.bot) return;
 
     if (

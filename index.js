@@ -19,9 +19,14 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.DirectMessageReactions,
-    // GatewayIntentBits.GuildInvites
   ],
-  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
+  partials: [
+    Partials.Channel,
+    Partials.Message,
+    Partials.Reaction,
+    Partials.GuildMember,
+    Partials.User,
+  ],
 });
 module.exports = client;
 

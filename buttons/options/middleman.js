@@ -18,8 +18,8 @@ module.exports = {
     const { channel, guild } = interaction;
 
     // fetch data
-    const roles = await guild.roles.fetch();
     await guild.members.fetch();
+    const roles = await guild.roles.fetch();
     console.log("Data fetched!");
 
     const middlemanRole = roles.find(role => role.name === "Middleman");
@@ -51,7 +51,7 @@ module.exports = {
       }
 
       const activeRoleMembers = roleMembers.filter(
-        member => member.presence
+        member => member?.presence?.status !== "offline"
       );
 
       console.log("activeRoleMembers", activeRoleMembers.size);

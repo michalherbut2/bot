@@ -23,13 +23,13 @@ module.exports = {
 
     const description = (await channel.messages.fetch()).find(
       m => m.embeds[0]?.title === "LISTING ENQUIRY"
-    ).embeds[0].description;
+    )?.embeds[0]?.description;
 
     console.log(description);
 
     const isSeller =
       message.embeds[0].description.includes(user) ||
-      description.includes(user);
+      description?.includes(user);
 
     // interaction.reply("The chat will close in 5 seconds.");
     // replyDangerEmbed(interaction, "The chat will close in 5 seconds.", true)

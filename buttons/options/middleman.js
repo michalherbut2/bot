@@ -51,7 +51,7 @@ module.exports = {
       }
 
       const activeRoleMembers = roleMembers.filter(
-        member => member?.presence?.status !== "offline"
+        member => member?.presence?.status && member?.presence?.status !== "offline"
       );
 
       console.log("activeRoleMembers", activeRoleMembers.size);

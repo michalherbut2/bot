@@ -1,3 +1,4 @@
+// get config (TOKEN)
 require("dotenv").config();
 const {
   Client,
@@ -6,6 +7,7 @@ const {
   Partials,
 } = require("discord.js");
 
+// create discord bot
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -36,10 +38,11 @@ client.slashCommands = new Collection();
 client.buttons = new Collection();
 client.modals = new Collection();
 
-// Initializing the project
+// Initializing the handlers
 require("./handler/interaction")(client);
-require("./handler/messageCreate")(client);
+// require("./handler/messageCreate")(client);
 
+// catch errors
 client
   .on("warn", console.warn)
   .on("error", error => console.error("\x1b[31m%s\x1b[0m", error))
@@ -50,4 +53,5 @@ process
   .on("uncaughtExceptionMonitor", console.error)
   .on("unhandledRejection", console.error);
 
+// start bot
 client.login(process.env.TOKEN);

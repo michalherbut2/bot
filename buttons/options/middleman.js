@@ -10,33 +10,36 @@ module.exports = {
     .setLabel("Middleman")
     .setStyle(ButtonStyle.Success),
 
-  async execute(interaction) {
+  async run(interaction) {
     await interaction.deferReply({ ephemeral: false }).catch(() => {});
     await interaction.deleteReply();
 
-    console.log("Pressed Middleman Button!");
-    const { channel, guild } = interaction;
+    const { channel, guild, message } = interaction;
 
-    // fetch data
+    const color = message.embeds[0].color;
+
+    // fetch members and roles
     await guild.members.fetch();
     const roles = await guild.roles.fetch();
-    console.log("Data fetched!");
 
+    // get the middleman role
     const middlemanRole = roles.find(role => role.name === "Middleman");
 
     try {
       if (!middlemanRole) throw new Error("Middleman role not found!");
 
-      console.log("role members:", middlemanRole.members.size);
+      console.log("Middleman role members:", middlemanRole.members.size);
 
       const roleMembers = middlemanRole.members;
 
       roleMembers.map(a => console.log(a.displayName, a?.presence?.status));
 
+      // get the middlemans with access to the channel
       const channelMember = roleMembers.find(
         member => channel.permissionsFor(member).serialize().ViewChannel
       );
 
+      // check if any middleman is already on the channel
       if (channelMember) {
         console.log(
           `The middleman ${channelMember.tag} is already on the channel!`
@@ -47,6 +50,7 @@ module.exports = {
         );
       }
 
+      // get online middlemans
       const activeRoleMembers = roleMembers.filter(
         member =>
           member?.presence?.status && member?.presence?.status !== "offline"
@@ -54,22 +58,23 @@ module.exports = {
 
       console.log("activeRoleMembers", activeRoleMembers.size);
 
+      // get free online middlemans 
       const freeMembers = activeRoleMembers.filter(
         member => !member.roles.cache.find(role => role.name === "Busy")
       );
 
       console.log("freeMembers:", freeMembers.size);
 
+      // chcek if there is any free middleman
       if (freeMembers.size < 1)
         throw new Error(
           "All Middleman are currently busy or there is none active."
         );
 
+      // get random free online middleman
       const randomMember = freeMembers.random();
 
-      console.log("adding busy role");
-
-      addRole(channel, randomMember.id, "Busy");
+      await addRole(channel, randomMember.id, "Busy");
 
       channel.permissionOverwrites.edit(randomMember.id, {
         ViewChannel: true,
@@ -77,8 +82,10 @@ module.exports = {
 
       console.log("random middleman:", randomMember.displayName);
 
+      // send info
       await sendEmbed(channel, {
         description: `${interaction.user} invited middleman ${randomMember} to the chat.`,
+        color,
       });
 
       // add middleman to the thread
@@ -90,13 +97,18 @@ module.exports = {
 
       thread.members.add(randomMember);
 
-      console.log("\x1b[34m%s\x1b[0m", 
+      console.log(
+        "\x1b[34m%s\x1b[0m",
         `${interaction.user.tag} invited middleman ${randomMember.user.tag} to the chat.`
       );
     } catch (error) {
       console.error("\x1b[31m%s\x1b[0m", error);
 
-      sendEmbed(channel, { description: error.message, ephemeral: true });
+      sendEmbed(channel, {
+        description: error.message,
+        ephemeral: true,
+        color: "red",
+      });
     }
   },
 };

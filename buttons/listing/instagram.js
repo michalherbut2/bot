@@ -1,3 +1,3 @@
 const createListingButton = require("../../functions/buttons/createListingButton");
 
-module.exports = createListingButton("tiktok");
+module.exports = createListingButton("instagram");

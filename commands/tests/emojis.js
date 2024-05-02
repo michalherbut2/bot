@@ -1,5 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const sendEmbed = require("../functions/messages/sendEmbed");
+const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("emojis").setDescription("emojis"),

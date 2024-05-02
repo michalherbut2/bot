@@ -1,7 +1,4 @@
-const {
-  ButtonBuilder,
-  ButtonStyle,
-} = require("discord.js");
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 
 module.exports = {
@@ -10,7 +7,8 @@ module.exports = {
     .setCustomId("embed")
     .setLabel("Send embed")
     .setStyle(ButtonStyle.Success),
-  async execute(interaction) {
+  
+  async run(interaction) {
     sendEmbed(interaction, { description: "elo", title: "s", ephemeral: true });
   },
 };

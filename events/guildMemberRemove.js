@@ -1,23 +1,27 @@
-const { PermissionsBitField } = require("discord.js");
+const { Events, PermissionsBitField } = require("discord.js");
 const client = require("../index");
 
+// data base
 const betterSqlite3 = require("better-sqlite3");
-const db = new betterSqlite3(`db/db_982460828492107797.db`);
 
-client.on("guildMemberRemove", async member => {
-  // add basic roles
+client.on(Events.GuildMemberRemove, async member => {
+  // chcek the bot permissions
   const { guild } = member;
-
   const clientMember = guild.members.cache.get(client.user.id);
 
   if (!clientMember.permissions.has(PermissionsBitField.Flags.ManageGuild))
     return console.log("no permissions to check invites");
 
+  // open data base
+  const db = new betterSqlite3(`db/db_${guild.id}.db`);
+
   try {
+    // clear credits of member who left the server
     db.prepare("DELETE FROM invite WHERE inviter_id = ?").run(member.id);
   } catch (error) {
     console.error("\x1b[31m%s\x1b[0m", error);
-    
-    console.log("Member left the server!");
   }
+
+  // close data base
+  db.close();
 });

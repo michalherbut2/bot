@@ -7,6 +7,7 @@ const invites = new Collection()
 client.on("ready", async () => {
   console.log(`${client.user.tag} is up and ready to go!`);
 
+  // handle invites
   client.guilds.cache.forEach(async guild => {
     const clientMember = guild.members.cache.get(client.user.id)
     
@@ -19,5 +20,6 @@ client.on("ready", async () => {
     client.invites = invites
   })
 
+  // create data bases
   createDB(client)
 });

@@ -14,6 +14,7 @@ module.exports = async (
   }
 ) => {
   console.log("start edit mebed");
+
   switch (color) {
     case "red":
       color = 0xf60101;
@@ -26,12 +27,16 @@ module.exports = async (
     default:
       break;
   }
+
+  // create base embed
   const embed = new EmbedBuilder().setColor(color).setDescription(description);
   if (title) embed.setTitle(title);
 
+  // add a buttons to the embed
   const message = { embeds: [embed] };
   if (row) message.components = [row];
 
+  // add an images to the embed
   if (image && image.startsWith("http")) {
     message.embeds[0].setImage(image);
   } else if (image) {
@@ -40,5 +45,6 @@ module.exports = async (
     message.files = [attachment];
   }
 
+  // edit the embed
   mess.edit(message);
 };

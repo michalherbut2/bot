@@ -15,11 +15,26 @@ module.exports = {
     .setLabel("Edit")
     .setStyle(ButtonStyle.Secondary),
 
-  async execute(interaction) {
-    let desc = interaction.message.embeds[0].description.split("\n\n");
-    
-    desc = desc.slice(1, -2).map(d=>d.split('\n')[1])
+  async run(interaction) {
+    let description = interaction.message.embeds[0].description
+      .split("\n\n")
+      .slice(1, -1);
 
+    // const titles = [],
+    //   values = [];
+
+    // description.map(d => {
+    //   const [title, value] = d.split("\n");
+    //   titles.push(title.split("*").join(""));
+    //   values.push(value);
+    // });
+
+    // get titles and values
+    const titles = description.map(d => d.split("\n")[0].split("*").join(""));
+    const values = description.map(d => d.split("\n")[1]);
+
+
+    // creat modal
     const modal = new ModalBuilder()
       .setCustomId("edit")
       .setTitle("Buzz Home Listing Form");
@@ -27,32 +42,32 @@ module.exports = {
     // Add components to modal
     const titleInput = new TextInputBuilder()
       .setCustomId("title")
-      .setLabel("Listing title")
-      .setValue(desc[0])
+      .setLabel(titles[0])
+      .setValue(values[0])
       .setStyle(TextInputStyle.Short);
 
     const originInput = new TextInputBuilder()
       .setCustomId("origin")
-      .setLabel("Account Origin")
-      .setValue(desc[1])
+      .setLabel(titles[1])
+      .setValue(values[1])
       .setStyle(TextInputStyle.Short);
 
     const followersInput = new TextInputBuilder()
       .setCustomId("followers")
-      .setLabel("Amount of followers")
-      .setValue(desc[2])
+      .setLabel(titles[2])
+      .setValue(values[2])
       .setStyle(TextInputStyle.Short);
 
     const cpbInput = new TextInputBuilder()
-      .setCustomId("cpb")
-      .setLabel("CPB status")
-      .setValue(desc[3])
+      .setCustomId("status")
+      .setLabel(titles[3])
+      .setValue(values[3])
       .setStyle(TextInputStyle.Short);
 
     const descriptionInput = new TextInputBuilder()
       .setCustomId("description")
-      .setLabel("Description")
-      .setValue(desc[4])
+      .setLabel(titles[4])
+      .setValue(values[4])
       .setStyle(TextInputStyle.Paragraph);
 
     modal.addComponents(
@@ -61,6 +76,7 @@ module.exports = {
       )
     );
 
+    // show modal
     interaction.showModal(modal);
   },
 };

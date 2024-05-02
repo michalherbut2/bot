@@ -1,49 +1,45 @@
 const { Events } = require("discord.js");
 const client = require("../index");
-const sendEmbed = require("../functions/messages/sendEmbed");
 
 client.on(Events.InteractionCreate, async interaction => {
   // Slash Command Handling
-  if (interaction.isChatInputCommand()) {
+  try {
+    if (interaction.isChatInputCommand()) {
+      // get a command
+      const command = client.slashCommands.get(interaction.commandName);
 
-    const cmd = client.slashCommands.get(interaction.commandName);
+      // if the command do not exist throw an error
+      if (!command) throw new Error();
 
-    if (!cmd)
-      return interaction.followUp({ content: "An error has occurred " });
-
-    cmd.run(client, interaction);
-  }
-
-  // Button Handling
-  else if (interaction.isButton()) {
-    const { buttons } = client;
-
-    const { customId } = interaction;
-
-    const button = buttons.get(customId);
-
-    if (!button) return new Error("There is no code for this button");
-
-    try {
-      await button.execute(interaction);
-    } catch (err) {
-      console.error(err);
+      // run the command
+      command.run(client, interaction);
     }
-  } else if (interaction.isModalSubmit()) {
-    const { modals } = client;
 
-    const { customId } = interaction;
+    // Button Handling
+    else if (interaction.isButton()) {
+      // get a button
+      const button = client.buttons.get(interaction.customId);
 
-    const modal = modals.get(customId);
+      // if the button do not exist throw an error
+      if (!button) throw new Error("There is no code for this button");
 
-    // console.log(modals, customId, modal);
+      // run the button
+      button.run(interaction);
+    }
 
-    try {
+    // Modal Handling
+    else if (interaction.isModalSubmit()) {
+      // get a modal
+      const modal = client.modals.get(interaction.customId);
+
+      // if the modal do not exist throw an error
       if (!modal) throw new Error("There is no code for this modal");
 
-      await modal.execute(interaction);
-    } catch (err) {
-      console.error(err);
+      // run the modal
+      modal.run(interaction);
     }
+  } catch (error) {
+    console.error(error);
+    interaction.followUp(error.message);
   }
 });

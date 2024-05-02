@@ -2,7 +2,9 @@ const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 
-const image = "https://cdn.discordapp.com/attachments/888756864748228681/1219514152293498910/home.png?ex=6614ce8f&is=6602598f&hm=d2ecfa6cca9f770dc3474deb51c5cd9a5e3f8b0e5cd0007d4a29c0d4803adf77&"
+// embed content
+const image =
+  "https://cdn.discordapp.com/attachments/888756864748228681/1219514152293498910/home.png?ex=6614ce8f&is=6602598f&hm=d2ecfa6cca9f770dc3474deb51c5cd9a5e3f8b0e5cd0007d4a29c0d4803adf77&";
 
 const title = "Why Consider Buzz Home?";
 
@@ -28,7 +30,6 @@ const description = `While Buzz Guest offers a fantastic platform for free. We w
 
 Whether you decide to stay with us or explore the benefits of Buzz Home, we're excited to have you here.`;
 
-
 module.exports = {
   name: "upgrade",
 
@@ -38,9 +39,8 @@ module.exports = {
     .setStyle(ButtonStyle.Success)
     .setEmoji("✅"),
 
-  async execute(interaction) {
-
-    const row = createRow("sevenDayFreeTrial")
+  async run(interaction) {
+    const row = createRow("ourPlans");
 
     // reply
     await sendEmbed(interaction, {
@@ -48,7 +48,7 @@ module.exports = {
       description,
       image,
       row,
-      ephemeral: true
+      ephemeral: true,
     });
   },
 };

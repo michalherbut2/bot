@@ -1,5 +1,6 @@
 const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
+const betterSqlite3 = require("better-sqlite3");
 
 const title = "Viral Buzz - Notification System";
 
@@ -18,28 +19,42 @@ module.exports = {
     .setStyle(ButtonStyle.Success)
     .setEmoji("✅"),
 
-  async execute(interaction) {
+  async run(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    // get roles
     const { member, guild } = interaction;
-
+    
+    // get roles
     const roles = await guild.roles.fetch();
 
-    const memberRoles = member.roles.cache
+    const memberRoles = member.roles.cache;
 
-    const neverClaimedRole = roles.find(role => role.name === "NeverClaimed");
-    
-    const claimedRole = roles.find(role => role.name === "Claimed");
-    
+    const joinedRole = roles.find(role => role.name.toLowerCase() === "joined");
+
+    const neverClaimedRole = roles.find(role => role.name.toLowerCase() === "neverclaimed");
+
+    const claimedRole = roles.find(role => role.name.toLowerCase() === "claimed");
+    const homeTrialRole = roles.find(role => role.name.toLowerCase() === "hometrial");
+
     // check role
-    // const isClaimed = memberRoles.some(role => role.name === "Claimed") && !memberRoles.some(role => role.name === "NeverClaimed");
-    const isClaimed = !memberRoles.some(role => role.name === "NeverClaimed");
+    const isJoined = memberRoles.some(role => role.name.toLowerCase() === "joined");
+
+    const db = new betterSqlite3(`db/db_${guild.id}.db`);
+
+    const isClaimed = db
+      .prepare("SELECT * FROM reward WHERE user_id = ?")
+      .get(member.id);
 
     // manage roles
+    if (isJoined) {
+      await member.roles.remove(neverClaimedRole);
+      await member.roles.remove(joinedRole);
+    }
+
     if (!isClaimed) {
-      await member.roles.remove(neverClaimedRole)
-      await member.roles.add(claimedRole)
+      await member.roles.add(homeTrialRole);
+      await member.roles.add(claimedRole);
+      db.prepare("INSERT INTO reward (user_id) VALUES (?)").run(member.id);
     }
 
     // prepare a description
@@ -51,7 +66,9 @@ module.exports = {
       description,
       footerText,
       ephemeral: true,
-      followUp: true
+      followUp: true,
     });
+
+    db.close();
   },
 };

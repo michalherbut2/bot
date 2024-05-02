@@ -53,10 +53,10 @@ module.exports = async client => {
   client.on("ready", async () => {
     // Register for a single guild
     await client.guilds.cache
-      .get("883720564970250290")
+      .get("883720564970250290") // server_test
       .commands.set(arrayOfSlashCommands);
     await client.guilds.cache
-      .get("982460828492107797")
+      .get("982460828492107797") // buzz viral
       .commands.set(arrayOfSlashCommands);
 
     // Register for all the guilds the bot is in

@@ -2,6 +2,7 @@ const { PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../messages/sendEmbed");
 const createRow = require("../messages/createRow");
 
+// embed content
 const thumbnail =
   "https://media.discordapp.net/attachments/1216104890976305162/1216201330549456926/Logoonew.png?ex=6611fbc1&is=65ff86c1&hm=50ceb9b9c349f96013743bd5bb672e231bbad5e233123921185bf65e8b516e45&format=webp&quality=lossless&width=625&height=625&";
 
@@ -19,8 +20,10 @@ module.exports = async (interaction, labelName) => {
   try {
     await interaction.deferReply({ ephemeral: true });
 
+    // get a data
     const { guild, user, client } = interaction;
 
+    // get a category
     const targetCategory = guild.channels.cache.find(
       channel => channel.name === labelName
     );
@@ -29,6 +32,7 @@ module.exports = async (interaction, labelName) => {
       throw new Error(`I cannot create the ticket channel.
 There is no **${labelName}** category on the server!`);
     
+    // get a channel
     const channelName = `🎟┃ticket-${user.tag}`;
     let targetChannel = targetCategory?.children?.cache.find(
       channel => channel.name === channelName
@@ -43,12 +47,13 @@ Please wait until your previous listing is finalised!`,
         color: "red",
         followUp: true,
       });
+    // create the channel
     else
       targetChannel = await guild.channels.create({
         name: channelName,
         parent: targetCategory.id,
         permissionOverwrites: [
-          //   // Zablokuj dostęp dla wszystkich poza rolą administratora
+          // access only for the admins, bot and author
           {
             id: client.user.id,
             allow: [
@@ -86,6 +91,7 @@ Please wait until your previous listing is finalised!`,
       row,
     });
 
+    // reply
     await sendEmbed(interaction, {
       description: `Your submission was received successfully!
 

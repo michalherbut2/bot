@@ -5,7 +5,7 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
-const createThread = require("../../functions/messages/createThread");
+const createForumPost = require("../../functions/messages/createForumPost");
 const createRow = require("../../functions/messages/createRow");
 
 module.exports = {
@@ -16,15 +16,20 @@ module.exports = {
     .setLabel("Create")
     .setStyle(ButtonStyle.Success),
 
-  async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+  async run(interaction) {
+    await interaction.deferReply({ ephemeral: false });
 
     const { message, guild, channel, member } = interaction;
+
     let description = message.embeds[0].description;
 
-    // Sprawdzenie, czy użytkownik ma uprawnienia administratora
+    const image = message.embeds[0].image.url;
+
+    const color = message.embeds[0].color;
+
+    // check a permissions
     if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
-      // Wysyłanie przycisku na kanał
+      // send a warning
       return await sendEmbed(interaction, {
         description: "Only admins can create the post!",
         ephemeral: true,
@@ -32,50 +37,76 @@ module.exports = {
         color: "red",
       });
 
-    // finding user id in embed
+    // get user id from embed
     const regex = /<@(\d+)>/;
     const match = description.match(regex);
 
     const userId = match[0];
 
     description = description.split("\n\n").slice(1, -2);
-    
+
     const name = description[0].split("\n")[1];
 
     description = description.join("\n\n");
 
-    const channelName = "tiktok-market";
-    const targetChannel = guild.channels.cache.find(
-      channel =>
-        channel.name.includes(channelName) &&
-        channel.parent.name.toLowerCase().includes("home")
+    // get a forum
+    const socialPlatformName = channel.parent.name
+      .toLowerCase()
+      .split(" - ")[1];
+
+    const channels = await guild.channels.fetch();
+
+    // find a category
+    const categoryName = "home marketplace";
+    const targetCategory = channels.find(
+      channel => channel.name.toLowerCase() === categoryName
     );
-    
-    description = `**Seller**:\n${userId}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
-
-    const imageThread = channel.threads.cache.find(
-      thread => thread.name === "ADD IMAGES"
-    );
-
-    const mess = await imageThread.messages.fetch();
-
-    const images = mess.map(m => m.attachments.map(i => i.url)).flat();
-    console.log("images:", images.length);
 
     try {
+      if (!targetCategory)
+        throw new Error(`I cannot create the ${labelName} channel.
+There is no **${categoryName}** category on the server!`);
+      
+      // get target channel
+      const targetChannel = targetCategory?.children?.cache.find(channel =>
+        channel.name.includes(socialPlatformName)
+      );
+
+      if (!targetChannel)
+        throw new Error(`I cannot create the listing channel.
+There is no **${targetChannel}** forum on the server!`);
+
+      // edit description
+      description = `**Seller**:\n${userId}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
+
+      // get images
+      const imageThread = channel.threads.cache.find(
+        thread => thread.name === "ADD IMAGES"
+      );
+
+      const imageMessages = await imageThread.messages.fetch();
+
+      const images = imageMessages.map(m => m.attachments.map(i => i.url)).flat();
+      
+      console.log("images:", images.length);
+
       if (!images.length) throw new Error(`Add images in ${imageThread}!`);
 
+      // get a filter embed
       const embeds = await channel.messages.fetch();
       const tagEmbed = embeds.find(e =>
         e.embeds[0]?.title?.includes("Add Filters")
       );
 
+      // get a reactions
       const reactions = tagEmbed.reactions.cache;
 
       const appliedTags = [];
 
+      // get a tags to add
       await Promise.all(
         reactions.map(async reaction => {
+          // check if admin add a reaction
           const hasAdmin = (await reaction.users.fetch()).some(user => {
             const member = guild.members.cache.get(user.id);
 
@@ -86,17 +117,16 @@ module.exports = {
           });
 
           if (hasAdmin) {
-            console.log("DODAJE");
-
+            // check if a tag exists
             const tag = targetChannel?.availableTags.find(tag => {
-              // console.log(tag.emoji, reaction.emoji.id, reaction.emoji.name);
               return (
                 tag.emoji?.id === reaction.emoji.id ||
                 tag.emoji?.name === reaction.emoji.name
               );
             });
 
-            appliedTags.push(tag.id);
+            // add a tag
+            if (tag) appliedTags.push(tag.id);
           }
         })
       );
@@ -106,30 +136,32 @@ module.exports = {
       if (!appliedTags.length)
         throw new Error(`Add filters in ${tagEmbed.url}!`);
 
-      // create thread in forum
-      const threadChannel = await createThread(targetChannel, {
+      // create a post in the forum
+      const threadChannel = await createForumPost(targetChannel, {
         name,
         message: { files: images.slice(0, 10) },
         appliedTags,
       });
 
+      // create button
       const row = createRow("enquire");
 
-      // send embed in thread
+      // send an embed in the thread
       await sendEmbed(threadChannel, {
         description,
-        image:
-          "https://media.discordapp.net/attachments/1218001649847763045/1218010018939670579/listing.png?ex=660f55ba&is=65fce0ba&hm=535bc26678b6f233265d24673ac9174f6a5d25733bfc0f545a4f2c524f6bec1c&format=webp&quality=lossless&width=1440&height=311&",
+        image,
         thumbnail:
           "https://media.discordapp.net/attachments/1216183037507932263/1216562554030264340/Logoonew.png?ex=66134c2b&is=6600d72b&hm=06b6dae2d0f70b9a34d2939206c860a6089e000a5b359ae71a14dc43baf6161e&format=webp&quality=lossless&width=625&height=625&",
         row,
+        color,
       });
 
       // reply
       await sendEmbed(interaction, {
         description: `The post has been created ${threadChannel}.`,
-        ephemeral: true,
+        // ephemeral: true,
         followUp: true,
+        color,
       });
     } catch (error) {
       console.error("\x1b[31m%s\x1b[0m", error);

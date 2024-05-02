@@ -1,6 +1,5 @@
 const { Events, PermissionsBitField } = require("discord.js");
 const client = require("../index");
-const createRow = require("../functions/messages/createRow");
 const sendEmbed = require("../functions/messages/sendEmbed");
 
 client.on(Events.MessageReactionAdd, async (messageReaction, user) => {
@@ -8,19 +7,27 @@ client.on(Events.MessageReactionAdd, async (messageReaction, user) => {
 
   const { message, emoji, users } = messageReaction;
 
-  const member = await message.guild.members.fetch(user.id); // Pobierz informacje o członku
+  // get a member
+  const member = await message.guild.members.fetch(user.id);
 
+  // check member permission
   if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
     if (message.channel.name === "ADD IMAGES")
-      if (emoji.name === "❌") message.delete();
+      if (emoji.name === "❌")
+        // delete image on ADD IMAGES thead when an admin add ❌ reaction
+        message.delete();
   } else {
+    // on listing channel
     if (message.channel.name.includes("listing-")) {
       console.log(`Collected ${emoji.name} from ${user.tag}`);
 
       try {
-        await users.remove(user.id); // Usuń reakcję użytkownika
+        // remove non-admin reaction
+        await users.remove(user.id);
 
         const messages = await message.channel.messages.fetch();
+
+        // send one warning if member without admin permissions add filter reaction
         if (
           !messages.some(m => {
             return m.embeds[0]?.description.includes(

@@ -2,16 +2,18 @@ const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 
+// embed content
 const image =
   "https://cdn.discordapp.com/attachments/888756864748228681/1219510997472247898/payments.png?ex=6614cb9f&is=6602569f&hm=bc6d0701614fe2067e99b7a6afd189c137e44a5eb3e2c8453e929995a5c1a977&";
 
-const thumbnail = "https://cdn.discordapp.com/attachments/888756864748228681/1219506201491144734/logo-final.png?ex=6614c727&is=66025227&hm=06d5990f17423e6cf0ce03063ba0ac0185b758ab10132c794b6002ecd5056ac9&"
+const thumbnail =
+  "https://cdn.discordapp.com/attachments/888756864748228681/1219506201491144734/logo-final.png?ex=6614c727&is=66025227&hm=06d5990f17423e6cf0ce03063ba0ac0185b758ab10132c794b6002ecd5056ac9&";
 
 const title = "BuzzGuard – Payment System";
 
 const footerText = "©️COPYRIGHT VIRAL BUZZ 2024";
 
-const color = 0x58c7fe
+const color = 0x58c7fe;
 
 const description = `* To complete your payment, please send the required amount to the provided address below.
 
@@ -31,7 +33,7 @@ module.exports = {
     .setLabel("BUY NOW")
     .setStyle(ButtonStyle.Success),
 
-  async execute(interaction) {
+  async run(interaction) {
     const { user } = interaction;
 
     const row = createRow("litecoin", "bitcoin");
@@ -44,7 +46,7 @@ module.exports = {
       footerText,
       row,
       thumbnail,
-      color,      
+      color,
       ephemeral: true,
     });
 

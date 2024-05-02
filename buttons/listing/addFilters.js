@@ -14,11 +14,11 @@ module.exports = {
     .setLabel("Add filters")
     .setStyle(ButtonStyle.Success),
 
-  async execute(interaction) {
+  async run(interaction) {
     const { member, guild } = interaction;
 
     if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
-      // Wysyłanie przycisku na kanał
+      // send a warning
       return await sendEmbed(interaction, {
         description: "Only admins can create the post!",
         ephemeral: true,
@@ -26,8 +26,10 @@ module.exports = {
         color: "red",
       });
 
+    // create button
     const instructionRow = createRow("instruction");
 
+    // send tag embed
     const tagEmbed = await sendEmbed(interaction, {
       title: "Add Filters",
       description: `Choose filters by simply clicking on a emoji below.
@@ -37,6 +39,7 @@ module.exports = {
       ephemeral: true,
     });
 
+    // get a forum
     const forumName = "tiktok-market";
     const forumChannel = (await guild.channels.fetch()).find(
       channel =>
@@ -44,14 +47,11 @@ module.exports = {
         channel.parent.name.toLowerCase().includes("home")
     );
 
-    console.log("FORUM:", forumChannel?.name);
-
+    // react with all forum tags on tag embed
     await Promise.all(
       forumChannel?.availableTags.map(async tag => {
         if (tag.emoji?.id || tag.emoji?.name)
           await tagEmbed.react(tag.emoji?.id || tag.emoji?.name);
-
-        // return tag.emoji?.id || tag.emoji?.name;
       })
     );
   },

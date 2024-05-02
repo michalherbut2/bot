@@ -2,6 +2,7 @@ const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 
+// embed content
 const image =
   "https://media.discordapp.net/attachments/1216183037507932263/1216547457434128424/PAYMENT.png?ex=66133e1c&is=6600c91c&hm=a406f13268fb61f4527992abef03f127d39e62b8622ad4664cf763de26da44b1&format=webp&quality=lossless&width=1440&height=311&";
 
@@ -31,7 +32,7 @@ module.exports = {
     .setLabel("BUY NOW")
     .setStyle(ButtonStyle.Success),
 
-  async execute(interaction) {
+  async run(interaction) {
     const { user } = interaction;
 
     const row = createRow("litecoin", "bitcoin");

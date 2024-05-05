@@ -20,8 +20,6 @@ module.exports = async (
     followUp = false,
   }
 ) => {
-  console.log("start mebed");
-
   switch (color) {
     case "red":
       color = 0xf60101;

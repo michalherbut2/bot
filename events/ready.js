@@ -11,7 +11,7 @@ client.on("ready", async () => {
   client.guilds.cache.forEach(async guild => {
     const clientMember = guild.members.cache.get(client.user.id)
     
-    if (!clientMember.permissions.has(PermissionsBitField.Flags.ManageGuild)) return console.log("no permissions to check invites");
+    if (!clientMember.permissions.has(PermissionsBitField.Flags.ManageGuild)) return console.log(`no permissions to check invites in ${guild}`);
 
     const firstInvates = await guild.invites.fetch()
 

@@ -23,7 +23,7 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
 
     const { member, guild } = interaction;
-    
+
     // get roles
     const roles = await guild.roles.fetch();
 
@@ -31,13 +31,11 @@ module.exports = {
 
     const joinedRole = roles.find(role => role.name.toLowerCase() === "joined");
 
-    const neverClaimedRole = roles.find(role => role.name.toLowerCase() === "neverclaimed");
+    const homeTrialRole = roles.find(
+      role => role.name.toLowerCase() === "hometrial"
+    );
 
-    const claimedRole = roles.find(role => role.name.toLowerCase() === "claimed");
-    const homeTrialRole = roles.find(role => role.name.toLowerCase() === "hometrial");
-
-    // check role
-    const isJoined = memberRoles.some(role => role.name.toLowerCase() === "joined");
+    const guestRole = roles.find(role => role.name.toLowerCase() === "guest");
 
     const db = new betterSqlite3(`db/db_${guild.id}.db`);
 
@@ -45,17 +43,22 @@ module.exports = {
       .prepare("SELECT * FROM reward WHERE user_id = ?")
       .get(member.id);
 
-    // manage roles
-    if (isJoined) {
-      await member.roles.remove(neverClaimedRole);
-      await member.roles.remove(joinedRole);
-    }
+    // manage the roles
+    // if the member has the "joined" role, remove it
+    if (memberRoles.has(joinedRole.id)) await member.roles.remove(joinedRole);
 
+    // if the member has never claimed a reward
     if (!isClaimed) {
+      // add the "home trial" role
       await member.roles.add(homeTrialRole);
-      await member.roles.add(claimedRole);
+
+      // and save the claim in db
       db.prepare("INSERT INTO reward (user_id) VALUES (?)").run(member.id);
     }
+
+    // if the member has got a reward and hasn't got a guest role
+    // add "guest" role
+    else if (!memberRoles.has(guestRole.id)) await member.roles.add(guestRole);
 
     // prepare a description
     const description = isClaimed ? claimed : notClaimed;

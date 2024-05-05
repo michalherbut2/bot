@@ -10,7 +10,7 @@ client.on(Events.GuildMemberRemove, async member => {
   const clientMember = guild.members.cache.get(client.user.id);
 
   if (!clientMember.permissions.has(PermissionsBitField.Flags.ManageGuild))
-    return console.log("no permissions to check invites");
+    return console.log(`no permissions to check invites in ${guild}`);
 
   // open data base
   const db = new betterSqlite3(`db/db_${guild.id}.db`);

@@ -11,12 +11,13 @@ client.on("guildMemberAdd", async member => {
 
   const roles = await guild.roles.fetch();
 
-  // get a "guest" role
-  const role = roles.find(role => role.name.toLowerCase() === "guest");
+  // get a "joined" role
+  const role = roles.find(role => role.name.toLowerCase() === "joined");
 
   try {
     if (!role) throw new Error(`There is no role ${roleName}`);
 
+    // add "joined" role
     member.roles.add(role);
   } catch (error) {
     console.error("\x1b[31m%s\x1b[0m", error);
@@ -101,7 +102,6 @@ client.on("guildMemberAdd", async member => {
         });
         break;
     }
-
   } catch (error) {
     console.error("\x1b[31m%s\x1b[0m", error);
   }

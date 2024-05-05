@@ -52,9 +52,9 @@ module.exports = async client => {
   // Slash Commands Register
   client.on("ready", async () => {
     // Register for a single guild
-    await client.guilds.cache
-      .get("883720564970250290") // server_test
-      .commands.set(arrayOfSlashCommands);
+    // await client.guilds.cache
+    //   .get("883720564970250290") // server_test
+    //   .commands.set(arrayOfSlashCommands);
     await client.guilds.cache
       .get("982460828492107797") // buzz viral
       .commands.set(arrayOfSlashCommands);

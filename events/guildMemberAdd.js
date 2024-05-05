@@ -39,7 +39,8 @@ client.on("guildMemberAdd", async member => {
 
   const invite = newInvites.find(i => i.uses > oldInvites.get(i.code));
 
-  if (!invite) return console.log("I cannot check who joined the server!");
+  if (!invite)
+    return console.log(`I cannot check who joined the ${guild} server!`);
 
   // find welcome channel
   const channel = guild.channels.cache.find(c => c.name.includes("welcome"));

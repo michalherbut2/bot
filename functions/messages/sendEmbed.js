@@ -28,6 +28,10 @@ module.exports = async (
     case "green":
       color = 0x248046;
       break;
+    
+    case "light green":
+      color = 0x90EE90;
+      break;
 
     default:
       break;

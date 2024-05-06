@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 
-const title = "MIDDLEMAN";
+const title = "HOW IT WORKS";
 
 // const image =
 
@@ -41,6 +41,7 @@ module.exports = {
     sendEmbed(channel, {
       title,
       description,
+      color: "light green"
       // image,
     });
   },

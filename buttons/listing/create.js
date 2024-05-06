@@ -66,7 +66,7 @@ module.exports = {
       if (!targetCategory)
         throw new Error(`I cannot create the ${labelName} channel.
 There is no **${categoryName}** category on the server!`);
-      
+
       // get target channel
       const targetChannel = targetCategory?.children?.cache.find(channel =>
         channel.name.includes(socialPlatformName)
@@ -79,18 +79,74 @@ There is no **${targetChannel}** forum on the server!`);
       // edit description
       description = `**Seller**:\n${userId}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
 
-      // get images
+      // get the image thread
       const imageThread = channel.threads.cache.find(
         thread => thread.name === "ADD IMAGES"
       );
 
+      // get messages with images
       const imageMessages = await imageThread.messages.fetch();
 
-      const images = imageMessages.map(m => m.attachments.map(i => i.url)).flat();
-      
-      console.log("images:", images.length);
+      // get url of images
+      const files = imageMessages
+        .map(m => m.attachments.map(i => i.url))
+        .flat()
+        .slice(0, 10);
 
-      if (!images.length) throw new Error(`Add images in ${imageThread}!`);
+      if (!files.length) throw new Error(`Add images in ${imageThread}!`);
+
+      // get the main page role
+      const roles = await interaction.guild.emojis.fetch();
+      const mainPageRole = roles.find(r => r.name.toLowerCase() === "mainpage");
+
+      // get fresh reaction data
+      await Promise.all(
+        imageMessages.map(async m => {
+          // skip if meessage has no images or hasn't got the main page reaction
+          if (!m.reactions.cache.has(mainPageRole.id) || !m.attachments.size)
+            return;
+
+          // get the main page reaction
+          const mainPageReaction = m.reactions.cache.get(mainPageRole.id);
+
+          // get fresh reaction data
+          await mainPageReaction.users.fetch();
+        })
+      );
+
+      // get the thumbnail image
+      const thumbnailImage = imageMessages.find(m => {
+        // skip if meessage has no images or hasn't got the main page reaction
+        if (!m.reactions.cache.has(mainPageRole.id) || !m.attachments.size)
+          return false;
+
+        // get the main page reaction
+        const mainPageReaction = m.reactions.cache.get(mainPageRole.id);
+
+        // get the users that have given the main page reaction
+        const rectionUsers = mainPageReaction.users.cache;
+
+        // check if any admin has given the main page reaction
+        return rectionUsers.some(user => {
+          // get the server member
+          const member = guild.members.cache.get(user.id);
+
+          // check if the member is an admin and is not a bot
+          return (
+            member?.permissions.has(PermissionFlagsBits.Administrator) &&
+            !user.bot
+          );
+        });
+      });
+
+      // get the url ot the thumbnail image 
+      const thumbnailImageUrl =
+        thumbnailImage?.attachments.first().url || files[0];
+
+      // remove the thumbnail image from other images
+      const index = files.indexOf(thumbnailImageUrl);
+      if (index !== -1) files.splice(index, 1);
+      files.splice();
 
       // get a filter embed
       const embeds = await channel.messages.fetch();
@@ -135,18 +191,21 @@ There is no **${targetChannel}** forum on the server!`);
 
       if (!appliedTags.length)
         throw new Error(`Add filters in ${tagEmbed.url}!`);
-
+      console.log("thumbnailImageUrl", thumbnailImageUrl);
       // create a post in the forum
       const threadChannel = await createForumPost(targetChannel, {
         name,
-        message: { files: images.slice(0, 10) },
+        message: { files: [thumbnailImageUrl] },
         appliedTags,
       });
+
+      // send the rest of the images if there are any
+      if (files.length) await threadChannel.send({ files });
 
       // create button
       const row = createRow("enquire");
 
-      // send an embed in the thread
+      // send an embed in the post
       await sendEmbed(threadChannel, {
         description,
         image,

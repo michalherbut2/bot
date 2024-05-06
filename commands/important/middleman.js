@@ -1,11 +1,11 @@
 const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 
-const title = "HOW IT WORKS";
-
 // const image =
 
-const description = `**MIDDLEMAN PROCESS**
+const description = `
+# HOW IT WORKS
+**MIDDLEMAN PROCESS**
 
 **1.** Active Middleman is invited via button in listing enquiry chat.
 
@@ -39,7 +39,6 @@ module.exports = {
     const { channel } = interaction;
 
     sendEmbed(channel, {
-      title,
       description,
       color: "light green"
       // image,

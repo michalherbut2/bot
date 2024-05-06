@@ -10,7 +10,7 @@ const title = "Viral Buzz – BuzzHome Plans";
 
 const footerText = "©️COPYRIGHT VIRAL BUZZ 2024";
 
-const description = `Monthly Plan for **$9.99**
+const description = `Monthly Plan for **$14.99**
 Lifetime Plan for **$129.99**
 
 *As a member, enjoy perks for both sellers and buyers!*

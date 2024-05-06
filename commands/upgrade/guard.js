@@ -22,8 +22,8 @@ const description = `**Sell TikTok Accounts with confidence with BuzzGuard <:loc
 
 **Explore our range of guard plans:**
 
-Pay per listing for **$4,99**
-Lifetime Plan for **$129,99**`;
+Pay per listing for **$9.99**
+Lifetime Plan for **$129.99**`;
 
 module.exports = {
   data: new SlashCommandBuilder()

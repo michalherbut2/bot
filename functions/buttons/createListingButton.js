@@ -7,12 +7,19 @@ const {
   TextInputBuilder,
 } = require("discord.js");
 const sendEmbed = require("../messages/sendEmbed");
+const Colors = require("../../utils/colors");
 
 // embed content
+const fans = {
+  tiktok: "Amount of Followers",
+  youtube: "Amount of Subscribers",
+  instagram: "Amount of Followers",
+};
+
 const statuses = {
-  tiktok: "CPB status",
-  youtube: "Monetization status",
-  instagram: "Average views",
+  tiktok: "CPB Status",
+  youtube: "Monetization Status",
+  instagram: "Average Views",
 };
 
 module.exports = socialPlatformName => {
@@ -72,9 +79,9 @@ Please wait until your previous listing is finalised!`);
           .setLabel("Account Origin")
           .setStyle(TextInputStyle.Short);
 
-        const followersInput = new TextInputBuilder()
-          .setCustomId("followers")
-          .setLabel("Amount of followers")
+        const fansInput = new TextInputBuilder()
+          .setCustomId("fans")
+          .setLabel(fans[socialPlatformName])
           .setStyle(TextInputStyle.Short);
 
         const statusInput = new TextInputBuilder()
@@ -92,7 +99,7 @@ Please wait until your previous listing is finalised!`);
           [
             titleInput,
             originInput,
-            followersInput,
+            fansInput,
             statusInput,
             descriptionInput,
           ].map(input => new ActionRowBuilder().addComponents(input))
@@ -106,7 +113,7 @@ Please wait until your previous listing is finalised!`);
         sendEmbed(interaction, {
           description: error.message,
           ephemeral: true,
-          color: "red",
+          color: Colors.RED,
         });
       }
     },

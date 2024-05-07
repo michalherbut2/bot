@@ -1,6 +1,7 @@
 const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
+const Colors = require("../../utils/colors");
 
 // embed content
 const images = {
@@ -22,12 +23,6 @@ const images = {
     options:
       "https://cdn.discordapp.com/attachments/1217520156855635999/1227698943996203008/insta-options.png?ex=66295abd&is=6616e5bd&hm=35dcdc6d18c194b7a5ba8d5c002b8988d7a9991fd48d65d4c72fdaada283046e&",
   },
-};
-
-const colors = {
-  tiktok: 0x00f2ea,
-  youtube: 0xdd2c28,
-  instagram: 0x794eba,
 };
 
 module.exports = {
@@ -79,7 +74,7 @@ module.exports = {
         .split(" - ")[1];
 
       // get the color of the social media platform 
-      const color = colors[socialPlatformName];
+      const color = socialPlatformName;
 
       // get user id from embed
       const userRegex = /<@!?(\d+)>/;
@@ -113,7 +108,7 @@ Please make your way to the ${targetChannel} channel.`;
       // send dm
       sendEmbed(channel, {
         description: replyDescription,
-        color: 0x3ff204,
+        color: Colors.INTENSE_GREEN,
       });
 
       // send enquiry embeds
@@ -123,7 +118,7 @@ Please make your way to the ${targetChannel} channel.`;
       await sendEmbed(targetChannel, {
         description:
           "The Seller has **ACCEPTED** the invite, he should be here shortly.",
-        color: 0x41fd02,
+        color: Colors.INTENSE_GREEN,
       });
 
       await targetChannel.send({ files });
@@ -164,7 +159,7 @@ Please make your way to the ${targetChannel} channel.`;
       sendEmbed(interaction, {
         description: error.message,
         ephemeral: true,
-        color: "red",
+        color: Colors.RED,
         followUp: true,
       });
     }

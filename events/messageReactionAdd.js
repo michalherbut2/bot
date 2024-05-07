@@ -1,6 +1,7 @@
 const { Events, PermissionsBitField } = require("discord.js");
 const client = require("../index");
 const sendEmbed = require("../functions/messages/sendEmbed");
+const Colors = require("../utils/colors");
 
 client.on(Events.MessageReactionAdd, async (messageReaction, user) => {
   if (user.bot) return;
@@ -17,10 +18,11 @@ client.on(Events.MessageReactionAdd, async (messageReaction, user) => {
         // delete image on ADD IMAGES thead when an admin add ❌ reaction
         message.delete();
   } else {
-    // on listing channel
-    if (message.channel.name.includes("listing-")) {
-      console.log(`Collected ${emoji.name} from ${user.tag}`);
-
+    // on the add filters embed on the listing channel
+    if (
+      message.channel.name.includes("listing-") &&
+      message.embeds[0]?.title.toLowerCase() === "add filters"
+    ) {
       try {
         // remove non-admin reaction
         await users.remove(user.id);
@@ -37,11 +39,11 @@ client.on(Events.MessageReactionAdd, async (messageReaction, user) => {
         )
           sendEmbed(message.channel, {
             description: `**${user}**, you can't add filters.\n\nOnly **admins** have permission to do so.`,
-            color: "red",
+            color: Colors.RED,
           });
 
         console.log(
-          `Usunięto reakcję ${emoji.name} od użytkownika ${user.tag}, który nie jest administratorem.`
+          `Removed ${emoji.name} reaction from ${user.tag}, who is not an admin.`
         );
       } catch (error) {
         console.error(

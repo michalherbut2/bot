@@ -4,6 +4,7 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
+const Colors = require("../../utils/colors");
 
 module.exports = {
   name: "report",
@@ -38,7 +39,7 @@ module.exports = {
         description: "There are no messages to report!",
         ephemeral: true,
         followUp: true,
-        color: "red",
+        color: Colors.RED,
       });
 
     // find category
@@ -91,7 +92,7 @@ There is no **${labelName}** category on the server!`);
     // send notification
     sendEmbed(channel, {
       description: `${interaction.user} has reported the chat.`,
-      color: "red",
+      color: Colors.RED,
     });
 
     console.log(

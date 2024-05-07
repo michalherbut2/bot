@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
+const Colors = require("../../utils/colors");
 
 const labelName = "ENQUIRE";
 
@@ -67,7 +68,7 @@ There is no **${categoryName}** category on the server!`);
 
 Please wait until your previous ${labelName} is finalised!`,
           ephemeral: true,
-          color: "red",
+          color: Colors.RED,
           followUp: true,
         });
       // create channel
@@ -140,7 +141,7 @@ Make your way to the **${targetChannel}** channel.`,
         description: error.message,
         ephemeral: true,
         followUp: true,
-        color: "red",
+        color: Colors.RED,
       });
     }
   },

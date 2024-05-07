@@ -20,20 +20,34 @@ module.exports = async (
     followUp = false,
   }
 ) => {
+  // get a color
   switch (color) {
     case "red":
       color = 0xf60101;
       break;
-
+    
     case "green":
       color = 0x248046;
       break;
     
     case "light green":
-      color = 0x90EE90;
+      color = 0x90ee90;
       break;
-
-    default:
+    
+    case "intense green":
+      color = 0x41fd02;
+      break;
+    
+    case "tiktok":
+      color = 0x00f2ea;
+      break;
+    
+    case "youtube":
+      color = 0xdd2c28;
+      break;
+    
+    case "instagram":
+      color = 0x794eba;
       break;
   }
 
@@ -60,7 +74,7 @@ module.exports = async (
   }
 
   // send the message
-  console.log("\x1b[32m%s\x1b[0m", "sending embed"); // green
+  console.log("\x1b[32m%s\x1b[0m", "Sending embed."); // green
 
   if (target instanceof BaseChannel || target instanceof User)
     // send to the channel or user

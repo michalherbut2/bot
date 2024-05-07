@@ -22,7 +22,7 @@ module.exports = {
     // get new embed content
     const titleValue = interaction.fields.getTextInputValue("title");
     const originValue = interaction.fields.getTextInputValue("origin");
-    const followersValue = interaction.fields.getTextInputValue("followers");
+    const fansValue = interaction.fields.getTextInputValue("fans");
     const statusValue = interaction.fields.getTextInputValue("status");
     const descriptionValue =
       interaction.fields.getTextInputValue("description");
@@ -30,7 +30,7 @@ module.exports = {
     const values = [
       titleValue,
       originValue,
-      followersValue,
+      fansValue,
       statusValue,
       descriptionValue,
     ];

@@ -20,19 +20,9 @@ module.exports = {
       .split("\n\n")
       .slice(1, -1);
 
-    // const titles = [],
-    //   values = [];
-
-    // description.map(d => {
-    //   const [title, value] = d.split("\n");
-    //   titles.push(title.split("*").join(""));
-    //   values.push(value);
-    // });
-
     // get titles and values
     const titles = description.map(d => d.split("\n")[0].split("*").join(""));
     const values = description.map(d => d.split("\n")[1]);
-
 
     // creat modal
     const modal = new ModalBuilder()
@@ -52,8 +42,8 @@ module.exports = {
       .setValue(values[1])
       .setStyle(TextInputStyle.Short);
 
-    const followersInput = new TextInputBuilder()
-      .setCustomId("followers")
+    const fansInput = new TextInputBuilder()
+      .setCustomId("fans")
       .setLabel(titles[2])
       .setValue(values[2])
       .setStyle(TextInputStyle.Short);
@@ -71,7 +61,7 @@ module.exports = {
       .setStyle(TextInputStyle.Paragraph);
 
     modal.addComponents(
-      [titleInput, originInput, followersInput, cpbInput, descriptionInput].map(
+      [titleInput, originInput, fansInput, cpbInput, descriptionInput].map(
         input => new ActionRowBuilder().addComponents(input)
       )
     );

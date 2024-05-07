@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
+const Colors = require("../../utils/colors");
 
 module.exports = {
   name: "addFilters",
@@ -23,7 +24,7 @@ module.exports = {
         description: "Only admins can create the post!",
         ephemeral: true,
         followUp: true,
-        color: "red",
+        color: Colors.RED,
       });
 
     // create button

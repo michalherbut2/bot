@@ -1,6 +1,7 @@
 const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const addRole = require("../../functions/roles/addRole");
+const Colors = require("../../utils/colors");
 
 module.exports = {
   name: "middleman",
@@ -107,7 +108,7 @@ module.exports = {
       sendEmbed(channel, {
         description: error.message,
         ephemeral: true,
-        color: "red",
+        color: Colors.RED,
       });
     }
   },

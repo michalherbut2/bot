@@ -1,6 +1,7 @@
 const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
+const Colors = require("../../utils/colors");
 
 // embed content
 const images = {
@@ -22,12 +23,6 @@ const images = {
     options:
       "https://cdn.discordapp.com/attachments/1217520156855635999/1227698943996203008/insta-options.png?ex=66295abd&is=6616e5bd&hm=35dcdc6d18c194b7a5ba8d5c002b8988d7a9991fd48d65d4c72fdaada283046e&",
   },
-};
-
-const colors = {
-  tiktok: 0x00f2ea,
-  youtube: 0xdd2c28,
-  instagram: 0x794eba,
 };
 
 module.exports = {
@@ -70,7 +65,7 @@ module.exports = {
         .split(" - ")[1];
 
       // get the color of the social media platform 
-      const color = colors[socialPlatformName];
+      const color = socialPlatformName;
 
       // get images from dm
       const channelMessages = await channel.messages.fetch({
@@ -117,12 +112,12 @@ module.exports = {
       await sendEmbed(targetChannel, {
         description:
           "The seller has **DECLINED** the invite, please end the chat.",
-        color: "red",
+        color: Colors.RED,
         row,
       });
 
       // send dm
-      sendEmbed(channel, { description: replyDescription, color: "red" });
+      sendEmbed(channel, { description: replyDescription, color: Colors.RED });
     } catch (error) {
       console.error("\x1b[31m%s\x1b[0m", error);
 
@@ -131,7 +126,7 @@ module.exports = {
       sendEmbed(interaction, {
         description: error.message,
         ephemeral: true,
-        color: "red",
+        color: Colors.RED,
         followUp: true,
       });
     }

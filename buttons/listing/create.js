@@ -7,6 +7,7 @@ const {
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createForumPost = require("../../functions/messages/createForumPost");
 const createRow = require("../../functions/messages/createRow");
+const Colors = require("../../utils/colors");
 
 module.exports = {
   name: "create",
@@ -34,7 +35,7 @@ module.exports = {
         description: "Only admins can create the post!",
         ephemeral: true,
         followUp: true,
-        color: "red",
+        color: Colors.RED,
       });
 
     // get user id from embed
@@ -227,7 +228,7 @@ There is no **${targetChannel}** forum on the server!`);
 
       sendEmbed(interaction, {
         description: error.message,
-        color: "red",
+        color: Colors.RED,
         ephemeral: true,
         followUp: true,
       });

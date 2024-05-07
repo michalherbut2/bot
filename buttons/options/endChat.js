@@ -45,19 +45,13 @@ module.exports = {
         member.permissions.has(PermissionsBitField.Flags.Administrator) ||
         isSeller
       ) {
-        // get middlemans from the channel
-        const channelRoleMember = role.members.find(
-          roleMember =>
-            channel.permissionsFor(roleMember).serialize().ViewChannel
-        );
-
-        console.log(`Middleman on channel: ${channelRoleMember?.displayName}`);
-
-        // remove "busy" role from channel members
-        channelRoleMember?.roles.remove(role);
-
         // delete channel
         channel.delete();
+
+        console.log(
+          "\x1b[34m%s\x1b[0m",
+          `${user.tag} ended the ${channel.name} chat.`
+        );
       }
 
       // if you are not admin, leave the channel
@@ -65,19 +59,20 @@ module.exports = {
         // if you have "busy" role, remove it
         if (member.roles.cache.some(role => role.name === "Busy"))
           member.roles.remove(role);
-        
+
         // remove access to the channel
         channel.permissionOverwrites.edit(user.id, {
           ViewChannel: false,
         });
 
+        // create a message description
+        const description = `${user} has left the chat.`;
+
         // send info
-        sendEmbed(channel, {
-          description: `${user} has left the chat.`,
-        });
+        sendEmbed(channel, { description });
+
+        console.log("\x1b[34m%s\x1b[0m", description);
       }
     }, 5000);
-
-    console.log("\x1b[34m%s\x1b[0m", `The chat ENDED.`);
   },
 };

@@ -1,6 +1,7 @@
 const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
+const Colors = require("../../utils/colors");
 
 module.exports = {
   name: "doNotAgree",
@@ -22,7 +23,7 @@ module.exports = {
       title,
       description,
       ephemeral: true,
-      color: "red",
+      color: Colors.RED,
       row,
     });
   },

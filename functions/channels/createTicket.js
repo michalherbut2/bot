@@ -1,6 +1,7 @@
 const { PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../messages/sendEmbed");
 const createRow = require("../messages/createRow");
+const Colors = require("../../utils/colors");
 
 // embed content
 const thumbnail =
@@ -44,7 +45,7 @@ There is no **${labelName}** category on the server!`);
 
 Please wait until your previous listing is finalised!`,
         ephemeral: true,
-        color: "red",
+        color: Colors.RED,
         followUp: true,
       });
     // create the channel
@@ -103,7 +104,7 @@ Please wait until your previous listing is finalised!`,
 
     sendEmbed(interaction, {
       description: error.message,
-      color: "red",
+      color: Colors.RED,
       followUp: true,
     });
   }

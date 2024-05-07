@@ -1,6 +1,7 @@
 const { PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../messages/sendEmbed");
 const createRow = require("../messages/createRow");
+const Colors = require("../../utils/colors");
 
 const images = {
   tiktok:
@@ -11,16 +12,16 @@ const images = {
     "https://cdn.discordapp.com/attachments/1217520156855635999/1227701470326165624/insta-listing.png?ex=66295d18&is=6616e818&hm=75da713b2e92b8cf7c8966e3eee55808a9aaf30373a304501cc027bd4c483f92&",
 };
 
-const statuses = {
-  tiktok: "CPB status:",
-  youtube: "Monetization status:",
-  instagram: "Average views:",
+const fans = {
+  tiktok: "Amount of Followers",
+  youtube: "Amount of Subscribers",
+  instagram: "Amount of Followers",
 };
 
-const colors = {
-  tiktok: 0x00f2ea,
-  youtube: 0xdd2c28,
-  instagram: 0x794eba,
+const statuses = {
+  tiktok: "CPB status",
+  youtube: "Monetization status",
+  instagram: "Average views",
 };
 
 module.exports = name => {
@@ -30,15 +31,14 @@ module.exports = name => {
     async run(interaction) {
       await interaction.deferReply({ ephemeral: true });
 
-      const { guild, user, client } = interaction;
+      const { guild, user, client, fields } = interaction;
 
       // get a listing content
-      const titleValue = interaction.fields.getTextInputValue("title");
-      const originValue = interaction.fields.getTextInputValue("origin");
-      const followersValue = interaction.fields.getTextInputValue("followers");
-      const statusValue = interaction.fields.getTextInputValue("status");
-      const descriptionValue =
-        interaction.fields.getTextInputValue("description");
+      const titleValue = fields.getTextInputValue("title");
+      const originValue = fields.getTextInputValue("origin");
+      const fansValue = fields.getTextInputValue("fans");
+      const statusValue = fields.getTextInputValue("status");
+      const descriptionValue = fields.getTextInputValue("description");
 
       const channels = await guild.channels.fetch();
 
@@ -133,10 +133,10 @@ ${titleValue}
 **Account Origin:**
 ${originValue}
 
-**Amount of Followers:**
-${followersValue}
+**${fans[name]}:**
+${fansValue}
 
-**${statuses[name]}**
+**${statuses[name]}:**
 ${statusValue}
 
 **Description:**
@@ -147,15 +147,9 @@ ${descriptionValue}
 **Thank you.**`,
           row,
           image: images[name],
-          color: colors[name],
+          color: name,
         });
-
-        await sendEmbed(targetChannel, {
-          description:
-            "Please wait for the **STAFF** to join the chat.\n\nThey should be here shortly!",
-          color: colors[name],
-        });
-
+        
         // reply
         await sendEmbed(interaction, {
           description: `Your submission was received successfully!
@@ -171,8 +165,17 @@ ${descriptionValue}
           invitable: false,
         });
 
+        // add the member to the thread
         thread.members.add(user);
 
+        // send an info embed in the thread
+        await sendEmbed(thread, {
+          description:
+            "Please wait for the **STAFF** to join the chat.\n\nThey should be here shortly!",
+          color: name,
+        });
+
+        // create a button
         const instructionRow = createRow("instruction");
 
         // send the filters embed
@@ -182,7 +185,7 @@ ${descriptionValue}
 
 *If unsure of which filters you should use. Please read the instructions.*`,
           row: instructionRow,
-          color: colors[name],
+          color: name,
         });
 
         // add emojis to the filters embed
@@ -203,7 +206,7 @@ ${descriptionValue}
           description: error.message,
           ephemeral: true,
           followUp: true,
-          color: "red",
+          color: Colors.RED,
         });
       }
     },

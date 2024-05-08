@@ -9,9 +9,9 @@ client.on("ready", async () => {
 
   // handle invites
   client.guilds.cache.forEach(async guild => {
-    const clientMember = guild.members.cache.get(client.user.id);
+    const clientMember = await guild.members.fetch(client.user.id);
 
-    if (!clientMember.permissions.has(PermissionsBitField.Flags.ManageGuild))
+    if (!clientMember?.permissions.has(PermissionsBitField.Flags.ManageGuild))
       return console.log(
         "\x1b[31m%s\x1b[0m",
         `No Manage Guild permission to check invites in ${guild} server`

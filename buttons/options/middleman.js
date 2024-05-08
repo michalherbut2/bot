@@ -79,6 +79,8 @@ module.exports = {
 
       channel.permissionOverwrites.edit(randomMember.id, {
         ViewChannel: true,
+        SendMessagesInThreads: true,
+        AttachFiles: true,
       });
 
       console.log("random middleman:", randomMember.displayName);

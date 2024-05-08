@@ -3,11 +3,13 @@ const {
   ButtonStyle,
   PermissionFlagsBits,
   PermissionsBitField,
+  AttachmentBuilder,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createForumPost = require("../../functions/messages/createForumPost");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
+const Canvas = require("@napi-rs/canvas");
 
 module.exports = {
   name: "create",
@@ -140,14 +142,29 @@ There is no **${targetChannel}** forum on the server!`);
         });
       });
 
-      // get the url ot the thumbnail image 
+      // get the url ot the thumbnail image
       const thumbnailImageUrl =
         thumbnailImage?.attachments.first().url || files[0];
+
+      const canvas = Canvas.createCanvas(900, 900);
+      const context = canvas.getContext("2d");
+
+      const background = await Canvas.loadImage(thumbnailImageUrl);
+
+      // This uses the canvas dimensions to stretch the image onto the entire canvas
+      // context.drawImage(background, 0, 0, canvas.width, canvas.height);
+      context.drawImage(background, 0, 0, background.width, background.height);
+
+      // Use the helpful Attachment class structure to process the file for you
+      const attachment = new AttachmentBuilder(await canvas.encode("jpeg"), {
+        name: "profile-image.jpeg",
+      });
+
+      // interaction.reply({ files: [attachment] });
 
       // remove the thumbnail image from other images
       const index = files.indexOf(thumbnailImageUrl);
       if (index !== -1) files.splice(index, 1);
-      files.splice();
 
       // get a filter embed
       const embeds = await channel.messages.fetch();
@@ -192,17 +209,39 @@ There is no **${targetChannel}** forum on the server!`);
 
       if (!appliedTags.length)
         throw new Error(`Add filters in ${tagEmbed.url}!`);
-      console.log("thumbnailImageUrl", thumbnailImageUrl);
+
       // create a post in the forum
       const threadChannel = await createForumPost(targetChannel, {
         name,
-        message: { files: [thumbnailImageUrl] },
+        message: { files: [attachment] },
         appliedTags,
       });
 
       // send the rest of the images if there are any
-      if (files.length) await threadChannel.send({ files });
+      if (files.length) {
+        // crop the images to 900 x 900 px
+        const croppedFiles = await Promise.all(
+          files.map(async file => {
+            // create a 900 x 900 2d canvas
+            const canvas = Canvas.createCanvas(900, 900);
+            const context = canvas.getContext("2d");
 
+            // load the image
+            const image = await Canvas.loadImage(file);
+
+            // This uses the canvas dimensions to stretch the image onto the entire canvas
+            context.drawImage(image, 0, 0, background.width, background.height);
+
+            // Use the helpful Attachment class structure to process the file for you
+            return new AttachmentBuilder(await canvas.encode("jpeg"), {
+              name: "profile-image.jpeg",
+            });
+          })
+        );
+
+        //
+        await threadChannel.send({ files: croppedFiles });
+      }
       // create button
       const row = createRow("enquire");
 

@@ -146,7 +146,7 @@ There is no **${targetChannel}** forum on the server!`);
       const thumbnailImageUrl =
         thumbnailImage?.attachments.first().url || files[0];
 
-      const canvas = Canvas.createCanvas(900, 900);
+      const canvas = Canvas.createCanvas(433, 346);
       const context = canvas.getContext("2d");
 
       const background = await Canvas.loadImage(thumbnailImageUrl);

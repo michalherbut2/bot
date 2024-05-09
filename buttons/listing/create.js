@@ -223,7 +223,7 @@ There is no **${targetChannel}** forum on the server!`);
         const croppedFiles = await Promise.all(
           files.map(async file => {
             // create a 900 x 900 2d canvas
-            const canvas = Canvas.createCanvas(900, 900);
+            const canvas = Canvas.createCanvas(433, 346);
             const context = canvas.getContext("2d");
 
             // load the image

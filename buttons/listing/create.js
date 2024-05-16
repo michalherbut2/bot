@@ -3,13 +3,13 @@ const {
   ButtonStyle,
   PermissionFlagsBits,
   PermissionsBitField,
-  AttachmentBuilder,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createForumPost = require("../../functions/messages/createForumPost");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
-const Canvas = require("@napi-rs/canvas");
+const scaleProportionallyAndCropImage = require("../../functions/images/scaleProportionallyAndCropImage");
+const fitImage = require("../../functions/images/fitImage");
 
 module.exports = {
   name: "create",
@@ -146,21 +146,13 @@ There is no **${targetChannel}** forum on the server!`);
       const thumbnailImageUrl =
         thumbnailImage?.attachments.first().url || files[0];
 
-      const canvas = Canvas.createCanvas(433, 346);
-      const context = canvas.getContext("2d");
-
-      const background = await Canvas.loadImage(thumbnailImageUrl);
-
-      // This uses the canvas dimensions to stretch the image onto the entire canvas
-      // context.drawImage(background, 0, 0, canvas.width, canvas.height);
-      context.drawImage(background, 0, 0, background.width, background.height);
-
-      // Use the helpful Attachment class structure to process the file for you
-      const attachment = new AttachmentBuilder(await canvas.encode("jpeg"), {
-        name: "profile-image.jpeg",
-      });
-
-      // interaction.reply({ files: [attachment] });
+      // scale Proportionally and crop the thumbnail image
+      // const attachment = await scaleProportionallyAndCropImage(
+      const attachment = await fitImage(
+        thumbnailImageUrl,
+        433,
+        346
+      );
 
       // remove the thumbnail image from other images
       const index = files.indexOf(thumbnailImageUrl);
@@ -221,22 +213,10 @@ There is no **${targetChannel}** forum on the server!`);
       if (files.length) {
         // crop the images to 900 x 900 px
         const croppedFiles = await Promise.all(
-          files.map(async file => {
-            // create a 900 x 900 2d canvas
-            const canvas = Canvas.createCanvas(433, 346);
-            const context = canvas.getContext("2d");
-
-            // load the image
-            const image = await Canvas.loadImage(file);
-
-            // This uses the canvas dimensions to stretch the image onto the entire canvas
-            context.drawImage(image, 0, 0, background.width, background.height);
-
-            // Use the helpful Attachment class structure to process the file for you
-            return new AttachmentBuilder(await canvas.encode("jpeg"), {
-              name: "profile-image.jpeg",
-            });
-          })
+          files.map(
+            // async file => await scaleProportionallyAndCropImage(file, 433, 346)
+            async file => await fitImage(file, 433, 346)
+          )
         );
 
         //

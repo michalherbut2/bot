@@ -1,7 +1,8 @@
 const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
+const Colors = require("../../utils/colors");
 
-// const image =
+const image = "https://cdn.discordapp.com/attachments/1217520156855635999/1243686666745544806/middleman.png?ex=665260f7&is=66510f77&hm=96b18c4ff416af3688d5ebd159926c8dc64b650e5c34be701c9606ff0715c16e&"
 
 const description = `
 # HOW IT WORKS
@@ -40,8 +41,8 @@ module.exports = {
 
     sendEmbed(channel, {
       description,
-      color: "light green"
-      // image,
+      color: Colors.BLUE,
+      image,
     });
   },
 };

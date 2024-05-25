@@ -42,8 +42,11 @@ client.on("guildMemberAdd", async member => {
   if (!invite)
     return console.log(`I cannot check who joined the ${guild} server!`);
 
+  // get all channels
+  const channels = await guild.channels.fetch()
+
   // find welcome channel
-  const channel = guild.channels.cache.find(c => c.name.includes("welcome"));
+  const channel = channels.find(c => c.name.includes("welcome"));
 
   // opend db
   const db = new betterSqlite3(`db/db_${guild.id}.db`);

@@ -1,6 +1,7 @@
 const Colors = {
   RED: 0xf60101,
   GREEN: 0x248046,
+  BLUE: 0x2cb8ff,
   LIGHT_GREEN: 0x90ee90,
   INTENSE_GREEN: 0x41fd02,
   TIKTOK: 0x00f2ea,

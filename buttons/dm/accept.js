@@ -62,9 +62,10 @@ module.exports = {
         limit: 1,
         before: message.id,
       });
-      const imageMessage = channelMessages.first();
-      const files = [imageMessage.attachments.first().url];
 
+      const imageMessage = channelMessages.last();
+      const files = [imageMessage.attachments.first()];
+      
       // get target channel
       const targetChannel = await guild.channels.fetch(targetChannelId);
 

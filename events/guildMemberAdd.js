@@ -11,8 +11,10 @@ client.on("guildMemberAdd", async member => {
 
   const roles = await guild.roles.fetch();
 
+  const roleName = "joined"
+
   // get a "joined" role
-  const role = roles.find(role => role.name.toLowerCase() === "joined");
+  const role = roles.find(role => role.name.toLowerCase() === roleName);
 
   try {
     if (!role) throw new Error(`There is no role ${roleName}`);

@@ -58,7 +58,7 @@ There is no **${categoryName}** category on the server!`);
 
       // get images
       const mess = await channel.messages.fetch();
-      const files = [mess.last().attachments.first().url];
+      const files = [mess.last().attachments.first()];
       // console.log("images:", image);
 
       // check if the enquiry exists

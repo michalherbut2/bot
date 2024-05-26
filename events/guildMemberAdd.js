@@ -72,7 +72,7 @@ client.on("guildMemberAdd", async member => {
     // get invites from the data base
     const inviteNum = getInvite(invite.inviter.id, db);
 
-    const mess = `${invite.inviter} invited ${member} to the Viral Buzz Beehive.\nYou currently have **${inviteNum} credits**!`;
+    const mess = `${invite.inviter.tag} invited ${member.user.tag} to the Viral Buzz Beehive.\nYou currently have **${inviteNum} credits**!`;
 
     // send welcome message
     sendEmbed(channel, {

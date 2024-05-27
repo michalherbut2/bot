@@ -57,24 +57,27 @@ module.exports = {
       if (!guild)
         throw new Error("The enquiry has expired! Create a new enquiry.");
 
-      // get image from dm
+      // get the previous message with the image from DM
       const channelMessages = await channel.messages.fetch({
         limit: 1,
         before: message.id,
       });
-
       const imageMessage = channelMessages.last();
-      const files = [imageMessage.attachments.first()];
-      
+      const attachment = imageMessage.attachments.first();
+      const files = [attachment.url];
+
+      if (!attachment)
+        throw new Error("No image found in the previous message.");
+
       // get target channel
       const targetChannel = await guild.channels.fetch(targetChannelId);
 
-      // get the name of the social media platform 
+      // get the name of the social media platform
       const socialPlatformName = targetChannel.parent.name
         .toLowerCase()
         .split(" - ")[1];
 
-      // get the color of the social media platform 
+      // get the color of the social media platform
       const color = socialPlatformName;
 
       // get user id from embed

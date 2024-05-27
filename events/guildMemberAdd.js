@@ -11,7 +11,7 @@ client.on("guildMemberAdd", async member => {
 
   const roles = await guild.roles.fetch();
 
-  const roleName = "joined"
+  const roleName = "joined";
 
   // get a "joined" role
   const role = roles.find(role => role.name.toLowerCase() === roleName);
@@ -39,20 +39,15 @@ client.on("guildMemberAdd", async member => {
 
   const oldInvites = client.invites.get(guild.id);
 
-  const invite = newInvites.find(i => i.uses > oldInvites.get(i.code) || 0);
-  console.log(invite);
-  
+  const invite = newInvites.find(i => i.uses > (oldInvites.get(i.code) || 0));
+
   if (!invite)
     return console.log(`I cannot check who joined the ${guild} server!`);
-  // console.log(invite);
-  console.log(invite.inviter.tag);
-  console.log(invite.uses);
-  console.log(invite.code);
-  
+
   oldInvites.set(invite.code, invite.uses);
 
   // get all channels
-  const channels = await guild.channels.fetch()
+  const channels = await guild.channels.fetch();
 
   // find welcome channel
   const channel = channels.find(c => c.name.includes("welcome"));

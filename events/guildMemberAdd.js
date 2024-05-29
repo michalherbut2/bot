@@ -17,7 +17,7 @@ client.on("guildMemberAdd", async member => {
   const role = roles.find(role => role.name.toLowerCase() === roleName);
 
   try {
-    if (!role) throw new Error(`There is no role ${roleName}`);
+    if (!role) throw new Error(`There is no role ${roleName} in ${guild}`);
 
     // add "joined" role
     member.roles.add(role);
@@ -67,7 +67,7 @@ client.on("guildMemberAdd", async member => {
   }
 
   try {
-    if (!channel) throw new Error("There is no channel 'welcome'");
+    if (!channel) throw new Error(`There is no channel 'welcome' in ${guild}`);
 
     member.channel = channel;
 

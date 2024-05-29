@@ -8,8 +8,7 @@ const sendEmbed = require("../../functions/messages/sendEmbed");
 const createForumPost = require("../../functions/messages/createForumPost");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
-const scaleProportionallyAndCropImage = require("../../functions/images/scaleProportionallyAndCropImage");
-const fitImage = require("../../functions/images/fitImage");
+const fillImage = require("../../functions/images/fillImage");
 
 module.exports = {
   name: "create",
@@ -22,7 +21,7 @@ module.exports = {
   async run(interaction) {
     await interaction.deferReply({ ephemeral: false });
 
-    const { message, guild, channel, member } = interaction;
+    const { message, guild, channel, member, client } = interaction;
 
     let description = message.embeds[0].description;
 
@@ -40,11 +39,14 @@ module.exports = {
         color: Colors.RED,
       });
 
-    // get user id from embed
+    // get user id from embed (seller)
     const regex = /<@(\d+)>/;
     const match = description.match(regex);
 
-    const userId = match[0];
+    const userMention = match[0];
+    const userId = match[1];
+
+    const seller = await client.users.fetch(userId)
 
     description = description.split("\n\n").slice(1, -2);
 
@@ -80,7 +82,7 @@ There is no **${categoryName}** category on the server!`);
 There is no **${targetChannel}** forum on the server!`);
 
       // edit description
-      description = `**Seller**:\n${userId}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
+      description = `**Seller**:\n${userMention}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
 
       // get the image thread
       const imageThread = channel.threads.cache.find(
@@ -88,43 +90,51 @@ There is no **${targetChannel}** forum on the server!`);
       );
 
       // get messages with images
-      const imageMessages = await imageThread.messages.fetch();
+      const imageThreadMessages = await imageThread.messages.fetch();
 
       // get url of images
-      const files = imageMessages
-        .map(m => m.attachments.map(i => i.url))
-        .flat()
-        .slice(0, 10);
+      const imageMessages = imageThreadMessages
+        // .map(m => m.attachments.map(i => i.url))
+        // .flat()
+        .filter(m => m.attachments.size)
+        .first(10);
+      // .slice(0, 10);
 
-      if (!files.length) throw new Error(`Add images in ${imageThread}!`);
+      if (!imageMessages.length)
+        throw new Error(`Add images in ${imageThread}!`);
 
       // get the main page role
-      const roles = await interaction.guild.emojis.fetch();
-      const mainPageRole = roles.find(r => r.name.toLowerCase() === "mainpage");
+      const emojis = await interaction.guild.emojis.fetch();
+      const mainPageEmoji = emojis.find(
+        r => r.name.toLowerCase() === "mainpage"
+      );
 
       // get fresh reaction data
       await Promise.all(
-        imageMessages.map(async m => {
+        imageThreadMessages.map(async m => {
           // skip if meessage has no images or hasn't got the main page reaction
-          if (!m.reactions.cache.has(mainPageRole.id) || !m.attachments.size)
-            return;
+          // if (!m.reactions.cache.has(mainPageEmoji.id) || !m.attachments.size)
+          if (!m.attachments.size) return;
 
-          // get the main page reaction
-          const mainPageReaction = m.reactions.cache.get(mainPageRole.id);
+          // // get the main page reaction
+          // const mainPageReaction = m.reactions.cache.get(mainPageEmoji.id);
 
-          // get fresh reaction data
-          await mainPageReaction.users.fetch();
+          // // get fresh reaction data
+          // await mainPageReaction.users.fetch();
+          await Promise.all(
+            m.reactions.cache.map(async r => await r.users.fetch())
+          );
         })
       );
 
       // get the thumbnail image
-      const thumbnailImage = imageMessages.find(m => {
+      const selectedThumbnailMessage = imageThreadMessages.find(m => {
         // skip if meessage has no images or hasn't got the main page reaction
-        if (!m.reactions.cache.has(mainPageRole.id) || !m.attachments.size)
+        if (!m.reactions.cache.has(mainPageEmoji.id) || !m.attachments.size)
           return false;
 
         // get the main page reaction
-        const mainPageReaction = m.reactions.cache.get(mainPageRole.id);
+        const mainPageReaction = m.reactions.cache.get(mainPageEmoji.id);
 
         // get the users that have given the main page reaction
         const rectionUsers = mainPageReaction.users.cache;
@@ -143,20 +153,15 @@ There is no **${targetChannel}** forum on the server!`);
       });
 
       // get the url ot the thumbnail image
-      const thumbnailImageUrl =
-        thumbnailImage?.attachments.first().url || files[0];
+      const thumbnailMessage = selectedThumbnailMessage || imageMessages[0];
 
       // scale Proportionally and crop the thumbnail image
-      // const attachment = await scaleProportionallyAndCropImage(
-      const attachment = await fitImage(
-        thumbnailImageUrl,
-        433,
-        346
-      );
+      // const thumbnail = await scaleProportionallyAndCropImage(
+      const thumbnail = await fillImage(thumbnailMessage, 433, 346);
 
       // remove the thumbnail image from other images
-      const index = files.indexOf(thumbnailImageUrl);
-      if (index !== -1) files.splice(index, 1);
+      const index = imageMessages.indexOf(thumbnailMessage);
+      if (index !== -1) imageMessages.splice(index, 1);
 
       // get a filter embed
       const embeds = await channel.messages.fetch();
@@ -205,22 +210,22 @@ There is no **${targetChannel}** forum on the server!`);
       // create a post in the forum
       const threadChannel = await createForumPost(targetChannel, {
         name,
-        message: { files: [attachment] },
+        message: { files: [thumbnail] },
         appliedTags,
       });
 
       // send the rest of the images if there are any
-      if (files.length) {
+      if (imageMessages.length) {
         // crop the images to 900 x 900 px
-        const croppedFiles = await Promise.all(
-          files.map(
+        const files = await Promise.all(
+          imageMessages.map(
             // async file => await scaleProportionallyAndCropImage(file, 433, 346)
-            async file => await fitImage(file, 433, 346)
+            async file => await fillImage(file, 433, 346)
           )
         );
 
         //
-        await threadChannel.send({ files: croppedFiles });
+        await threadChannel.send({ files });
       }
       // create button
       const row = createRow("enquire");
@@ -240,6 +245,11 @@ There is no **${targetChannel}** forum on the server!`);
         description: `The post has been created ${threadChannel}.`,
         // ephemeral: true,
         followUp: true,
+        color,
+      });
+      
+      await sendEmbed(seller, {
+        description: `The post has been created ${threadChannel}.`,
         color,
       });
     } catch (error) {

@@ -14,6 +14,8 @@ client.on(Events.MessageCreate, async message => {
           async a => await message.channel.send({ files: [a.url] })
         )
       );
+      
+      message.delete();
     } else if (message.attachments.size == 1) {
       await message.react("❌");
 
@@ -26,6 +28,12 @@ client.on(Events.MessageCreate, async message => {
       // give the main page emoji reaction
       await message.react(emoji.id);
       // await message.react("1236938634892935190"); // main page emoji
+
+      // give the position emoji reactions
+      await message.react("⬆️");
+      await message.react("⬇️");
+      await message.react("⬅️");
+      await message.react("➡️");
     }
   }
 });

@@ -80,6 +80,8 @@ There is no **${forumName}** forum to public listing on the server!`);
           channel => channel.name === channelName
         );
 
+        const adminRole = await getRole("admin", guild)
+
         if (targetChannel)
           throw new Error(`**You already have a listing ${targetChannel} in progress.**
 
@@ -94,14 +96,21 @@ Please wait until your previous listing is finalised!`);
             permissionOverwrites: [
               // access only for admins, bot and listing author
               {
-                id: client.user.id,
+                id: client.user,
                 allow: [
                   PermissionsBitField.Flags.ViewChannel,
                   PermissionsBitField.Flags.SendMessages,
                 ],
               },
               {
-                id: user.id,
+                id: adminRole,
+                allow: [
+                  PermissionsBitField.Flags.ViewChannel,
+                  PermissionsBitField.Flags.SendMessages,
+                ],
+              },
+              {
+                id: user,
                 allow: [
                   PermissionsBitField.Flags.ViewChannel,
                   PermissionsBitField.Flags.SendMessagesInThreads,

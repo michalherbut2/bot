@@ -6,6 +6,7 @@ const {
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
+const getRole = require("../../functions/roles/getRole");
 
 const labelName = "ENQUIRE";
 
@@ -61,6 +62,8 @@ There is no **${categoryName}** category on the server!`);
       const files = [mess.last().attachments.first()];
       // console.log("images:", image);
 
+      const adminRole = await getRole("admin", guild)
+
       // check if the enquiry exists
       if (targetChannel)
         return await sendEmbed(interaction, {
@@ -82,6 +85,13 @@ Please wait until your previous ${labelName} is finalised!`,
             // send mess only in thread
             {
               id: client.user, // bot
+              allow: [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages,
+              ],
+            },
+            {
+              id: adminRole, // admins
               allow: [
                 PermissionsBitField.Flags.ViewChannel,
                 PermissionsBitField.Flags.SendMessages,

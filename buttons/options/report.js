@@ -57,6 +57,8 @@ There is no **${labelName}** category on the server!`);
       channel => channel.name === channelName
     );
 
+    const adminRole = await getRole("admin", guild)
+
     // create channel
     if (!targetChannel)
       targetChannel = await guild.channels.create({
@@ -67,7 +69,14 @@ There is no **${labelName}** category on the server!`);
         permissionOverwrites: [
           // Zablokuj dostęp dla wszystkich poza rolą administratora
           {
-            id: client.user.id,
+            id: client.user,
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
+          },
+          {
+            id: adminRole,
             allow: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,

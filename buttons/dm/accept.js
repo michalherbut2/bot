@@ -53,20 +53,21 @@ module.exports = {
       guild.channels.cache.find(c => c.id === targetChannelId)
     );
 
+    // get the previous message with the image from DM
+    const channelMessages = await channel.messages.fetch({
+      limit: 1,
+      before: message.id,
+    });
+    const imageMessage = channelMessages.first();
+
     try {
       if (!guild)
         throw new Error("The enquiry has expired! Create a new enquiry.");
+      console.log(imageMessage.attachments);
+      const files = [imageMessage.attachments.first()]
+      // const files = [attachment.url];
 
-      // get the previous message with the image from DM
-      const channelMessages = await channel.messages.fetch({
-        limit: 1,
-        before: message.id,
-      });
-      const imageMessage = channelMessages.last();
-      const attachment = imageMessage.attachments.first();
-      const files = [attachment.url];
-
-      if (!attachment)
+      if (!files)
         throw new Error("No image found in the previous message.");
 
       // get target channel
@@ -93,26 +94,6 @@ module.exports = {
         ViewChannel: true,
         SendMessagesInThreads: true,
         AttachFiles: true,
-      });
-
-      // reply
-      description = `** Seller **: \n${user} \n\n${description
-        .split("\n\n")
-        .slice(1, -1)
-        .join("\n\n")}`;
-
-      const replyDescription = `You have **ACCEPTED** the invite from ${targetUser},
-
-Please make your way to the ${targetChannel} channel.`;
-
-      // delete previous messages from dm
-      await imageMessage.delete();
-      await message.delete();
-
-      // send dm
-      sendEmbed(channel, {
-        description: replyDescription,
-        color: Colors.INTENSE_GREEN,
       });
 
       // send enquiry embeds
@@ -155,9 +136,30 @@ Please make your way to the ${targetChannel} channel.`;
       thread.members.add(targetUser);
 
       thread.members.add(user);
+
+      // reply
+      description = `** Seller **: \n${user} \n\n${description
+        .split("\n\n")
+        .slice(1, -1)
+        .join("\n\n")}`;
+
+      const replyDescription = `You have **ACCEPTED** the invite from ${targetUser},
+
+Please make your way to the ${targetChannel} channel.`;
+
+      // delete previous messages from dm
+      await imageMessage.delete();
+      await message.delete();
+
+      // send dm
+      sendEmbed(channel, {
+        description: replyDescription,
+        color: Colors.INTENSE_GREEN,
+      });
     } catch (error) {
       console.error("\x1b[31m%s\x1b[0m", error);
-
+      
+      await imageMessage?.delete();
       await message.delete();
 
       sendEmbed(interaction, {

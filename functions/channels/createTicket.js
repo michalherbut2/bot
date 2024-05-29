@@ -39,6 +39,8 @@ There is no **${labelName}** category on the server!`);
       channel => channel.name === channelName
     );
 
+    const adminRole = await getRole("admin", guild)
+
     if (targetChannel)
       return await sendEmbed(interaction, {
         description: `**You already have a ${labelName} ${targetChannel} in progress.**
@@ -56,14 +58,21 @@ Please wait until your previous listing is finalised!`,
         permissionOverwrites: [
           // access only for the admins, bot and author
           {
-            id: client.user.id,
+            id: client.user,
             allow: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,
             ],
           },
           {
-            id: user.id,
+            id: adminRole,
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
+          },
+          {
+            id: user,
             allow: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,

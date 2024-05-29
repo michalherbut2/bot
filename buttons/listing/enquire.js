@@ -91,13 +91,6 @@ Please wait until your previous ${labelName} is finalised!`,
               ],
             },
             {
-              id: adminRole, // admins
-              allow: [
-                PermissionsBitField.Flags.ViewChannel,
-                PermissionsBitField.Flags.SendMessages,
-              ],
-            },
-            {
               id: user, // buyer
               allow: [
                 PermissionsBitField.Flags.ViewChannel,

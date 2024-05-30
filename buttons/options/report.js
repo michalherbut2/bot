@@ -18,7 +18,7 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
     await interaction.deleteReply();
 
-    const { channel, guild, client } = interaction;
+    const { channel, guild, client, user } = interaction;
 
     // get thread messages
     const threads = await channel.threads.fetch();
@@ -70,21 +70,28 @@ There is no **${labelName}** category on the server!`);
         permissionOverwrites: [
           // Zablokuj dostęp dla wszystkich poza rolą administratora
           {
-            id: client.user,
+            id: client.user, // bot
             allow: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,
             ],
           },
           {
-            id: adminRole,
+            id: adminRole, // admins
             allow: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,
             ],
           },
           {
-            id: guild.id,
+            id: user, // reporter
+            allow: [
+              PermissionsBitField.Flags.ViewChannel,
+              PermissionsBitField.Flags.SendMessages,
+            ],
+          },
+          {
+            id: guild.id, // everyone
             deny: [
               PermissionsBitField.Flags.ViewChannel,
               PermissionsBitField.Flags.SendMessages,

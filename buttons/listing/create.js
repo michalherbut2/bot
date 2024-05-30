@@ -2,13 +2,16 @@ const {
   ButtonBuilder,
   ButtonStyle,
   PermissionFlagsBits,
-  PermissionsBitField,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createForumPost = require("../../functions/messages/createForumPost");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
 const fillImage = require("../../functions/images/fillImage");
+const isAdmin = require("../../functions/permissions/isAdmin");
+const getCategory = require("../../functions/channels/getCategory");
+const getChannel = require("../../functions/channels/getChannel");
+const getTags = require("../../functions/channels/getTags");
 
 module.exports = {
   name: "create",
@@ -19,70 +22,39 @@ module.exports = {
     .setStyle(ButtonStyle.Success),
 
   async run(interaction) {
+    // defer the reply
     await interaction.deferReply({ ephemeral: false });
 
+    console.log("\nSTART CREATING A POST");
+
+    // get the interaction data
     const { message, guild, channel, member, client } = interaction;
 
-    let description = message.embeds[0].description;
-
-    const image = message.embeds[0].image.url;
-
-    const color = message.embeds[0].color;
-
-    // check a permissions
-    if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
-      // send a warning
-      return await sendEmbed(interaction, {
-        description: "Only admins can create the post!",
-        ephemeral: true,
-        followUp: true,
-        color: Colors.RED,
-      });
-
-    // get user id from embed (seller)
-    const regex = /<@(\d+)>/;
-    const match = description.match(regex);
-
-    const userMention = match[0];
-    const userId = match[1];
-
-    const seller = await client.users.fetch(userId)
-
-    description = description.split("\n\n").slice(1, -2);
-
-    const name = description[0].split("\n")[1];
-
-    description = description.join("\n\n");
-
-    // get a forum
-    const socialPlatformName = channel.parent.name
-      .toLowerCase()
-      .split(" - ")[1];
-
-    const channels = await guild.channels.fetch();
-
-    // find a category
-    const categoryName = "home marketplace";
-    const targetCategory = channels.find(
-      channel => channel.name.toLowerCase() === categoryName
-    );
+    //////////////////////////////////////
+    // CHECK THE CORECTNESS OF THE DATA //
+    //////////////////////////////////////
 
     try {
-      if (!targetCategory)
-        throw new Error(`I cannot create the ${labelName} channel.
-There is no **${categoryName}** category on the server!`);
+      // check a permissions and send a warning
+      if (!isAdmin(member)) throw new Error("Only admins can create the post!");
 
-      // get target channel
-      const targetChannel = targetCategory?.children?.cache.find(channel =>
-        channel.name.includes(socialPlatformName)
-      );
+      // get a forum
+      const socialPlatformName = channel.parent.name
+        .toLowerCase()
+        .split(" - ")[1];
 
-      if (!targetChannel)
-        throw new Error(`I cannot create the listing channel.
-There is no **${targetChannel}** forum on the server!`);
+      // get the channel category
+      const targetCategory = await getCategory("home marketplace", guild);
 
-      // edit description
-      description = `**Seller**:\n${userMention}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
+      // get the target channel
+      const targetChannel = getChannel(socialPlatformName, targetCategory);
+
+      // get tags (filters)
+      const appliedTags = await getTags(channel, targetChannel);
+
+      /////////////////////
+      // HANDLING IMAGES //
+      /////////////////////
 
       // get the image thread
       const imageThread = channel.threads.cache.find(
@@ -94,11 +66,8 @@ There is no **${targetChannel}** forum on the server!`);
 
       // get url of images
       const imageMessages = imageThreadMessages
-        // .map(m => m.attachments.map(i => i.url))
-        // .flat()
         .filter(m => m.attachments.size)
         .first(10);
-      // .slice(0, 10);
 
       if (!imageMessages.length)
         throw new Error(`Add images in ${imageThread}!`);
@@ -112,15 +81,10 @@ There is no **${targetChannel}** forum on the server!`);
       // get fresh reaction data
       await Promise.all(
         imageThreadMessages.map(async m => {
-          // skip if meessage has no images or hasn't got the main page reaction
-          // if (!m.reactions.cache.has(mainPageEmoji.id) || !m.attachments.size)
+          // skip if meessage has no images
           if (!m.attachments.size) return;
 
-          // // get the main page reaction
-          // const mainPageReaction = m.reactions.cache.get(mainPageEmoji.id);
-
-          // // get fresh reaction data
-          // await mainPageReaction.users.fetch();
+          // get fresh reaction data
           await Promise.all(
             m.reactions.cache.map(async r => await r.users.fetch())
           );
@@ -156,56 +120,52 @@ There is no **${targetChannel}** forum on the server!`);
       const thumbnailMessage = selectedThumbnailMessage || imageMessages[0];
 
       // scale Proportionally and crop the thumbnail image
-      // const thumbnail = await scaleProportionallyAndCropImage(
       const thumbnail = await fillImage(thumbnailMessage, 433, 346);
 
       // remove the thumbnail image from other images
       const index = imageMessages.indexOf(thumbnailMessage);
       if (index !== -1) imageMessages.splice(index, 1);
 
-      // get a filter embed
-      const embeds = await channel.messages.fetch();
-      const tagEmbed = embeds.find(e =>
-        e.embeds[0]?.title?.includes("Add Filters")
-      );
+      ///////////////////////////
+      // PREPARE MESSAGES DATA //
+      ///////////////////////////
 
-      // get a reactions
-      const reactions = tagEmbed.reactions.cache;
+      // get the embed description
+      let description = message.embeds[0].description;
 
-      const appliedTags = [];
+      // get user id from embed (seller)
+      const regex = /<@(\d+)>/;
+      const match = description.match(regex);
 
-      // get a tags to add
-      await Promise.all(
-        reactions.map(async reaction => {
-          // check if admin add a reaction
-          const hasAdmin = (await reaction.users.fetch()).some(user => {
-            const member = guild.members.cache.get(user.id);
+      const userMention = match[0];
+      const userId = match[1];
 
-            return (
-              member?.permissions.has(PermissionFlagsBits.Administrator) &&
-              !user.bot
-            );
-          });
+      // edit the description remove an unnecessary text
+      description = description.split("\n\n").slice(1, -2);
 
-          if (hasAdmin) {
-            // check if a tag exists
-            const tag = targetChannel?.availableTags.find(tag => {
-              return (
-                tag.emoji?.id === reaction.emoji.id ||
-                tag.emoji?.name === reaction.emoji.name
-              );
-            });
+      // get a post name
+      const name = description[0].split("\n")[1];
 
-            // add a tag
-            if (tag) appliedTags.push(tag.id);
-          }
-        })
-      );
+      // merge the description
+      description = description.join("\n\n");    
 
-      console.log("TAGS:", appliedTags.length);
+      // edit the description
+      description = `**Seller**:\n${userMention}\n\n${description}\n\n*Feel free to contact the seller via our platform!*`;
 
-      if (!appliedTags.length)
-        throw new Error(`Add filters in ${tagEmbed.url}!`);
+      // get the embed image
+      const image = message.embeds[0].image.url;
+
+      // create button
+      const row = createRow("enquire");
+
+      // get the embed color
+      const color = message.embeds[0].color;
+
+      const seller = await client.users.fetch(userId);
+
+      //##################//
+      // SENDING MESSAGES //
+      //##################//
 
       // create a post in the forum
       const threadChannel = await createForumPost(targetChannel, {
@@ -216,19 +176,14 @@ There is no **${targetChannel}** forum on the server!`);
 
       // send the rest of the images if there are any
       if (imageMessages.length) {
-        // crop the images to 900 x 900 px
+        // crop the images to 433 x 346 px
         const files = await Promise.all(
-          imageMessages.map(
-            // async file => await scaleProportionallyAndCropImage(file, 433, 346)
-            async file => await fillImage(file, 433, 346)
-          )
+          imageMessages.map(async file => await fillImage(file, 433, 346))
         );
 
-        //
+        // send the images
         await threadChannel.send({ files });
       }
-      // create button
-      const row = createRow("enquire");
 
       // send an embed in the post
       await sendEmbed(threadChannel, {
@@ -247,7 +202,8 @@ There is no **${targetChannel}** forum on the server!`);
         followUp: true,
         color,
       });
-      
+
+      // send the notification to the seller
       await sendEmbed(seller, {
         description: `The post has been created ${threadChannel}.`,
         color,

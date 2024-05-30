@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const Colors = require("../../utils/colors");
+const getRole = require("../../functions/roles/getRole");
 
 module.exports = {
   name: "report",

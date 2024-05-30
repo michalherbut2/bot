@@ -2,6 +2,7 @@ const { PermissionsBitField } = require("discord.js");
 const sendEmbed = require("../messages/sendEmbed");
 const createRow = require("../messages/createRow");
 const Colors = require("../../utils/colors");
+const getRole = require("../roles/getRole");
 
 // embed content
 const thumbnail =

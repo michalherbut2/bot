@@ -61,10 +61,10 @@ module.exports = {
         thread => thread.name === "ADD IMAGES"
       );
 
-      // get messages with images
+      // get all messages
       const imageThreadMessages = await imageThread.messages.fetch();
 
-      // get url of images
+      // get messages with images
       const imageMessages = imageThreadMessages
         .filter(m => m.attachments.size)
         .first(10);

@@ -1,9 +1,6 @@
-const {
-  ButtonBuilder,
-  ButtonStyle,
-  PermissionsBitField,
-} = require("discord.js");
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
+const isAdmin = require("../../functions/permissions/isAdmin");
 
 module.exports = {
   name: "endChat",
@@ -42,7 +39,8 @@ module.exports = {
     setTimeout(() => {
       // if you are admin, delete the channel
       if (
-        member.permissions.has(PermissionsBitField.Flags.Administrator) ||
+        // member.permissions.has(PermissionsBitField.Flags.Administrator) ||
+        isAdmin(member) ||
         isSeller
       ) {
         // delete channel

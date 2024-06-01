@@ -15,7 +15,7 @@ client.on(Events.MessageCreate, async message => {
     const messages = await channel.messages.fetch();
 
     // get messages with images
-    const imageMessages = messages.filter(m => m.attachments.size);
+    const imageMessages = messages.filter(m => m.attachments.size === 1);
 
     // delete image if there are more than 2 pictures
     try {
@@ -32,7 +32,7 @@ client.on(Events.MessageCreate, async message => {
       } else if (message.attachments.size > 1) {
         // send all images separately
         await Promise.all(
-          message.attachments.map(
+          message.attachments.first(2 - imageMessages.size).map(
             async a => await channel.send({ files: [a.url] })
           )
         );

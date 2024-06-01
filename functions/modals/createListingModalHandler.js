@@ -107,7 +107,8 @@ Please wait until your previous listing is finalised!`);
                 id: adminRole,
                 allow: [
                   PermissionsBitField.Flags.ViewChannel,
-                  PermissionsBitField.Flags.SendMessages,
+                  PermissionsBitField.Flags.SendMessagesInThreads,
+                  PermissionsBitField.Flags.AttachFiles,
                 ],
               },
               {

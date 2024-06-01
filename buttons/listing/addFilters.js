@@ -1,11 +1,11 @@
 const {
   ButtonBuilder,
   ButtonStyle,
-  PermissionsBitField,
 } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
+const isAdmin = require("../../functions/permissions/isAdmin");
 
 module.exports = {
   name: "addFilters",
@@ -18,7 +18,8 @@ module.exports = {
   async run(interaction) {
     const { member, guild } = interaction;
 
-    if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
+    // if (!member.permissions.has(PermissionsBitField.Flags.Administrator))
+    if (!isAdmin(member))
       // send a warning
       return await sendEmbed(interaction, {
         description: "Only admins can create the post!",

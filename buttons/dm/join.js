@@ -57,7 +57,7 @@ module.exports = {
 
       const description = isAdminPesent
         ? `Another admin is already helping with the listing.`
-        : `Thanks for ACCEPTING!
+        : `Thanks for **ACCEPTING**!
 
 Please make your way to the ${thread} listing.`;
 

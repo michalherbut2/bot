@@ -1,7 +1,4 @@
-const {
-  ButtonBuilder,
-  ButtonStyle,
-} = require("discord.js");
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
 const sendEmbed = require("../../functions/messages/sendEmbed");
 const createRow = require("../../functions/messages/createRow");
 const Colors = require("../../utils/colors");
@@ -22,7 +19,7 @@ module.exports = {
     if (!isAdmin(member))
       // send a warning
       return await sendEmbed(interaction, {
-        description: "Only admins can create the post!",
+        description: `${member} you can't create the listing!\n\nOnly admins have permission to do so.`,
         ephemeral: true,
         followUp: true,
         color: Colors.RED,

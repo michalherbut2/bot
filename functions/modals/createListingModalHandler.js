@@ -81,7 +81,7 @@ There is no **${forumName}** forum to public listing on the server!`);
           channel => channel.name === channelName
         );
 
-        const adminRole = await getRole("admin", guild)
+        const adminRole = await getRole("admin", guild);
 
         if (targetChannel)
           throw new Error(`**You already have a listing ${targetChannel} in progress.**
@@ -160,7 +160,7 @@ ${descriptionValue}
           image: images[name],
           color: name,
         });
-        
+
         // reply
         await sendEmbed(interaction, {
           description: `Your submission was received successfully!
@@ -206,6 +206,14 @@ ${descriptionValue}
               await tagEmbed.react(tag.emoji?.id || tag.emoji?.name);
 
             return tag.emoji?.id || tag.emoji?.name;
+          })
+        );
+
+        adminRole.members.map(admin =>
+          sendEmbed(admin, {
+            description: `${user} created a ${thread} thread in ${targetChannel} and needs assistance!`,
+            row: createRow("join"),
+            color: name,
           })
         );
 

@@ -74,12 +74,15 @@ client.on("guildMemberAdd", async member => {
     // get invites from the data base
     const inviteNum = getInvite(invite.inviter.id, db);
 
-    const mess = `**${invite.inviter.tag}** invited **${member.user.tag}** to the Viral Buzz Beehive.\nYou currently have **${inviteNum} credits**!`;
+    const description = `**${invite.inviter}** invited **${member}** to the Viral Buzz Beehive.\nYou currently have **${inviteNum} credits**!`;
+
+    const temporaryMessage = await channel.send(`${invite.inviter} ${member}`);
+    await temporaryMessage.delete();
 
     // send welcome message
     sendEmbed(channel, {
       title: "Viral Buzz",
-      description: mess,
+      description,
       image:
         "https://cdn.discordapp.com/attachments/1217520156855635999/1219399073199554700/123333.png?ex=660b28e2&is=65f8b3e2&hm=3d8e5637a2db47cf0b78a7365b1cc4fb203cacdfde1c92ce9f6e9650e02afa1e&",
     });

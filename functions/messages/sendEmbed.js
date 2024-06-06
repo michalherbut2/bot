@@ -1,3 +1,4 @@
+const { GuildMember } = require("discord.js");
 const {
   EmbedBuilder,
   AttachmentBuilder,
@@ -25,27 +26,27 @@ module.exports = async (
     case "red":
       color = 0xf60101;
       break;
-    
+
     case "green":
       color = 0x248046;
       break;
-    
+
     case "light green":
       color = 0x90ee90;
       break;
-    
+
     case "intense green":
       color = 0x41fd02;
       break;
-    
+
     case "tiktok":
       color = 0x00f2ea;
       break;
-    
+
     case "youtube":
       color = 0xdd2c28;
       break;
-    
+
     case "instagram":
       color = 0x794eba;
       break;
@@ -75,16 +76,24 @@ module.exports = async (
 
   // send the message
   console.log("\x1b[32m%s\x1b[0m", "Sending embed."); // green
-
-  if (target instanceof BaseChannel || target instanceof User)
-    // send to the channel or user
-    return await target.send(message);
-  else if (target instanceof BaseInteraction) {
-    // follow up
-    if (followUp) return await target.followUp(message);
-    // reply
-    else return await target.reply(message);
+  try {
+    if (
+      target instanceof BaseChannel ||
+      target instanceof User ||
+      target instanceof GuildMember
+    )
+      // send to the channel or user
+      return await target.send(message);
+    else if (target instanceof BaseInteraction) {
+      // follow up
+      if (followUp) return await target.followUp(message);
+      // reply
+      else return await target.reply(message);
+    }
+  } catch (error) {
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      `The embed has not been sent to the ${target?.name || target?.displayName}.\n${error.message}`
+    ); // red
   }
-
-  console.log("\x1b[31m%s\x1b[0m", "The embed has not been sent."); // red
 };

@@ -56,7 +56,7 @@ module.exports = {
       }
 
       const description = isAdminPesent
-        ? `Some admin has already joined the thread.`
+        ? `Another admin is already helping with the listing.`
         : `You have **JOINED** the thread!
 
 Please make your way to the ${thread} thread.`;

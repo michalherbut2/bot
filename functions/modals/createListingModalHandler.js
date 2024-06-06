@@ -211,7 +211,7 @@ ${descriptionValue}
 
         adminRole.members.map(admin =>
           sendEmbed(admin, {
-            description: `${user} created a ${thread} thread in ${targetChannel} and needs assistance!`,
+            description: `${user} created a ${thread} listing and needs assistance!`,
             row: createRow("join"),
             color: name,
           })

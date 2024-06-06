@@ -48,7 +48,8 @@ module.exports = {
           .filter(admin => admin.id != user.id)
           .map(admin =>
             sendEmbed(admin, {
-              description: `${user} admin has already joined the thread.`,
+              // description: `${user} admin has already joined the thread.`,
+              description: `The listing is taken care of by another admin.`,
               color: message.embeds[0].color,
             })
           );

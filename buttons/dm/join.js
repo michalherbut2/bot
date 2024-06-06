@@ -70,6 +70,8 @@ Please make your way to the ${thread} listing.`;
     } catch (error) {
       console.error("\x1b[31m%s\x1b[0m", error);
 
+      message.delete();
+
       sendEmbed(interaction, {
         description: error.message,
         ephemeral: true,

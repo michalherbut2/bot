@@ -74,7 +74,6 @@ Please make your way to the ${thread} listing.`;
         description: error.message,
         ephemeral: true,
         color: Colors.RED,
-        followUp: true,
       });
     }
   },

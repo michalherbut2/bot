@@ -57,9 +57,9 @@ module.exports = {
 
       const description = isAdminPesent
         ? `Another admin is already helping with the listing.`
-        : `You have **JOINED** the thread!
+        : `Thanks for ACCEPTING!
 
-Please make your way to the ${thread} thread.`;
+Please make your way to the ${thread} listing.`;
 
       // send dm
       sendEmbed(interaction, {
